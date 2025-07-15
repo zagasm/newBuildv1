@@ -47,8 +47,8 @@ function SideBarNav() {
                             <span className="link_name">Chat</span>
                         </li>
                     </Link>
-                    <Link to="/create-post">
-                        <li className={`list-group-item pl-3 pr-3 d-flex align-items-center ${isActive('/create-post') ? 'active' : ''}`}>
+                    <Link to="/template">
+                        <li className={`list-group-item pl-3 pr-3 d-flex align-items-center ${isActive('/template') ? 'active' : ''}`}>
                             <img src={template_icon} alt="Template" />
                             <span className="link_name">Template</span>
                         </li>

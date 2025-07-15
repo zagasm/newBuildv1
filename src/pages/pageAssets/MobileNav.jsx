@@ -40,8 +40,8 @@ function MobileNav() {
                         <span className="mobile_icon_name">chat</span>
                     </Link>
                      <Link
-                        to="/create-post"
-                        className={currentPath === '/create-post' ? 'active' : ''}
+                        to="/template"
+                        className={currentPath === '/template' ? 'active' : ''}
                     >
                          <img src={template_icon}  />
                         <span className="mobile_icon_name">Templete</span>

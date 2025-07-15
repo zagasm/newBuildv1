@@ -63,16 +63,16 @@ export function Signin() {
 
       const data = response.data;
     console.log(data);
-      if (data.error) {
-        throw new Error(data.message || "Login failed");
-      }
+      // if (data.error) {
+      //   throw new Error(data.message || "Login failed");
+      // }
 
-      login({
-        ...data.user,
-        token: data.token
-      });
+      // login({
+      //   ...data.user,
+      //   token: data.token
+      // });
 
-      showToast.success(data.message || "Login successful!");
+      // showToast.success(data.message || "Login successful!");
       // navigate("/");
     } catch (err) {
       console.error("Error during sign in:", err);

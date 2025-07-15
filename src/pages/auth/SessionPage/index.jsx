@@ -11,9 +11,9 @@ function Sessionpage() {
   }
 
   // If user is not authenticated, redirect to the sign-in page
-  if (!user) {
-    return <Navigate to="/auth/signin" replace />;
-  }
+  // if (!user) {
+  //   return <Navigate to="/auth/signin" replace />;
+  // }
 
   // If user is authenticated, render the child routes
   return <Outlet />;

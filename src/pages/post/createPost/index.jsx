@@ -161,9 +161,9 @@ function CreatePost() {
 
             if (key === 'text') {
                 formData.append('message', text);
-                formData.append('background_color_code', textBgColor);
+                formData.append('background_color_code', encodeURIComponent(textBgColor) );
                 formData.append('text_color_code', textColor);
-                console.log(textBgColor);
+                console.log(encodeURIComponent(textBgColor));
             } else {
                 formData.append('photo_caption', caption);
                 images.forEach((image, index) => {
