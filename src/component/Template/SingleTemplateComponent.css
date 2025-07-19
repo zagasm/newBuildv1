@@ -1,0 +1,134 @@
+.blog-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.blog-card:hover .card-img-top {
+  transform: scale(1.03);
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+.badge-success {
+  background-color: #28a745;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-footer {
+  padding: 1rem 1.25rem;
+  background:rgba(238, 218, 251, 1);
+}
+.blog-card {
+  transition: transform 0.2s ease;
+}
+.blog-card:hover {
+  transform: translateY(-5px);
+}
+.template-card  button{
+    width: 168;
+height: 45;
+opacity: 1;
+gap: 10px;
+border-radius: 100px;
+padding-top: 12.5px;
+padding-right: 28px;
+padding-bottom: 12.5px;
+padding-left: 28px;
+background: rgba(221, 221, 221, 1);
+display: block;
+border:none;
+margin-top: 20px;
+
+}
+.template-headSection{
+    display: none;
+}
+
+/* Add to your existing CSS */
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* Semi-transparent black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-container:hover .image-overlay {
+  opacity: 1;
+}
+
+.overlay-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+}
+
+.overlay-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff5722;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .col-lg-4 {
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-img-top {
+    height: 180px;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .card-footer {
+    padding: 0.75rem 1rem;
+  }
+}

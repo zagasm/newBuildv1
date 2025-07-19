@@ -8,6 +8,7 @@ import googleLogo from "../../../assets/google-logo.png";
 import axios from "axios";
 
 export function Signin() {
+  const [showPasswordField, setShowPasswordField] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username_email: "",
@@ -17,116 +18,102 @@ export function Signin() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const containerVariants = {
     hidden: {},
     visible: { transition: { staggerChildren: 0.15 } },
   };
-
   const inputVariants = {
     hidden: { opacity: 0, x: -30 },
     visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+    // If email/phone is cleared, hide password field
+    if (name === "username_email" && value.trim() === "") {
+      setShowPasswordField(false);
+    }
   };
-
   const validateForm = () => {
     const newErrors = {};
     if (!formData.username_email.trim()) newErrors.username_email = "Email or username is required";
     if (!formData.password) newErrors.password = "Password is required";
     else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!showPasswordField) {
+      if (!formData.username_email.trim()) {
+        setErrors({ username_email: "Email or phone number is required" });
+        return;
+      }
+      setShowPasswordField(true);
+      return;
+    }
     if (!validateForm()) return;
-
     setIsLoading(true);
-
     try {
       const formPayload = new FormData();
-      formPayload.append("username_email", formData.username_email);
+      formPayload.append("login", formData.username_email);
       formPayload.append("password", formData.password);
-// const response = await axios.post(`https://zagasm.com/api/auth/sign_in.php`, formPayload);
+
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/sign_in.php`,
+        `${import.meta.env.VITE_API_URL}/api/v1/users/login`,
         formPayload
-       
       );
-
       const data = response.data;
-    console.log(data);
-      // if (data.error) {
-      //   throw new Error(data.message || "Login failed");
-      // }
-
-      // login({
-      //   ...data.user,
-      //   token: data.token
-      // });
-
-      // showToast.success(data.message || "Login successful!");
-      // navigate("/");
+      if (data.status === true) {
+        login({ token: data.data.token, user: data.data.user }); // assuming your AuthContext supports user info too
+        showToast.success(data.message || "Login successful!");
+        navigate("/");
+      } else {
+        showToast.error(data.message || "Invalid credentials.");
+        setErrors({ server: data.message || "Invalid credentials." });
+      }
     } catch (err) {
-      console.error("Error during sign in:", err);
-
-      // Backend responded with an error
-      const status = err.response.status;
-      const message =
-        err.response.data?.message || "An error occurred. Please try again.";
-
+      const status = err.response?.status;
+      const message = err.response?.data?.message || "An error occurred. Please try again.";
       if (status === 401) {
-        showToast.error(message || "Invalid credentails.");
-        setErrors(message || "Invalid credentails.");
+        showToast.error(message);
+        setErrors({ server: message });
       } else {
         showToast.error(message);
-        setErrors(message);
+        setErrors({ server: message });
       }
-
-    }
-
-    finally {
+    } finally {
       setIsLoading(false);
     }
   };
-
   return (
-    <AuthContainer title="Welcome Back" description="Sign in to continue your journey">
+    <AuthContainer title="Enter your email address or Phone number to login your account" >
       <motion.form
         onSubmit={handleSubmit}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pr-3 pl-3"
-      >
-        {/* Error Message */}
+        className="pr-3 pl-3">
         {errors.server && (
           <motion.div
-            className="alert alert-danger"
+            className="alert alert-danger m-0 mt-3 p-1 pl-2"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
             {errors.server}
           </motion.div>
         )}
-
         {/* Username/Email Field */}
         <motion.div variants={inputVariants} className="form-group">
-          <div className="position-relative icon-form-control">
-            <i className="feather-user position-absolute input-icon"></i>
+          <div className="position-relative icon-form-contro mt-3">
+            <label>Email Address / Phone number</label>
             <input
               type="text"
               name="username_email"
-              className={`form-control input ${errors.username_email ? 'is-invalid' : ''}`}
-              style={{ paddingLeft: "60px" }}
-              placeholder="Email or Username"
+              className={`form-control input ${errors.username_email ? 'is-invali' : ''}`}
+              placeholder="Phone number or Email Address"
               value={formData.username_email}
               onChange={handleChange}
             />
@@ -135,45 +122,57 @@ export function Signin() {
             )}
           </div>
         </motion.div>
-
         {/* Password Field */}
-        <motion.div variants={inputVariants} className="form-group">
-          <div className="position-relative icon-form-control">
-            <i className="feather-lock position-absolute input-icon"></i>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              className={`form-control input ${errors.password ? 'is-invalid' : ''}`}
-              style={{ paddingLeft: "60px", paddingRight: "40px" }}
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-            <i
-              className={`position-absolute ${showPassword ? "feather-eye" : "feather-eye-off"}`}
-              style={{ right: "9px", top:'-23px', cursor: "pointer" }}
-              onClick={() => setShowPassword(!showPassword)}
-            />
+        {showPasswordField && formData.username_email.trim() !== "" && (
+          <motion.div variants={inputVariants} className="form-group">
+            <label>Password</label>
+            <div className="position-relative icon-form-control">
+              <i className="feather-lock position-absolute input-icon"></i>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className={`form-control input ${errors.password ? 'is-invali' : ''}`}
+                style={{ paddingLeft: "60px", paddingRight: "40px" }}
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange} />
+              <i
+                className={`position-absolute input-icon ${showPassword ? "feather-eye" : "feather-eye-off"}`}
+                style={{
+                  right: "15px",
+                  cursor: "pointer",
+                  color: '#666'
+                }}
+                onClick={() => setShowPassword(!showPassword)} />
+            </div>
             {errors.password && (
-              <div className="invalid-feedback d-block">{errors.password}</div>
+              <div className="invalid-feedback d-block m-0 p-0">{errors.password}</div>
             )}
-          </div>
-        </motion.div>
-
-        {/* Forgot Password */}
-        <div className="py-3 text-right">
-          <Link to="/auth/forget-password" style={{ color: '#8000FF' }}>
-            Forgot password?
-          </Link>
-        </div>
-
+            <div className="px- text-right">
+              <Link to="/auth/forget-password" style={{ color: '#8000FF' }}>
+                Forgot password?
+              </Link>
+            </div>
+          </motion.div>
+        )}
         {/* Submit Button */}
         <motion.button
           variants={inputVariants}
           type="submit"
-          className="btn submit_button btn-block"
-          disabled={isLoading}
-          style={{ color: 'white' }}
+          className="bt submit_button btn-block"
+          disabled={
+            isLoading ||
+            formData.username_email.trim() === ""
+          }
+          style={{
+            color: formData.username_email.trim() === ""
+              ? 'rgba(153, 153, 153, 1)'
+              : 'white',
+            backgroundColor:
+              formData.username_email.trim() === ""
+                ? 'rgba(230, 230, 230, 1)'
+                : 'rgba(143, 7, 231, 1)'
+          }}
         >
           {isLoading ? (
             <>
@@ -182,46 +181,30 @@ export function Signin() {
             </>
           ) : (
             <>
-              <i className="fas fa-sign-in-alt mr-2"></i>
-              Sign In
+              {/* <i className="fas fa-sign-in-alt mr-2"></i> */}
+              {showPasswordField ? "Login" : "Next"}
             </>
           )}
         </motion.button>
-
-        {/* Social Login */}
-        <div className="text-center mt-4">
-          <p className="small text-muted mb-3">Or continue with</p>
+        <div className="text-center mt-3 border-botto pb-3 mb-3">
+          <p className="small text-muted">Or continue with</p>
           <div className="row">
             <div className="col-6">
-              <motion.button
-                initial={{ opacity: 0, y: 70 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: "easeOut" }}
-                type="button"
-                className=" btn-sm api_btn btn-block"
-              >
-                <img src={googleLogo} alt="Google Logo" className="mr-2" style={{ width: '20px', height: '20px', marginTop: '-5px' }} />
-                <span>Google</span>
-              </motion.button>
+              <button type="button" className="btn-sm api_btn btn-block">
+                <img src={googleLogo} alt="Google Logo" className="mr-2" style={{ width: '20px', height: '20px' }} />
+                Google
+              </button>
             </div>
             <div className="col-6">
-              <motion.button
-                initial={{ opacity: 0, y: 70 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, ease: "easeOut" }}
-                type="button"
-                className=" api_btn dark_apple_api_btn btn-block"
-              >
+              <button type="button" className="api_btn dark_apple_api_btn btn-block">
                 <i className="fab fa-apple mr-2"></i> Apple
-              </motion.button>
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Sign Up Link */}
         <div className="text-center mt-4">
           Don't have an account?{" "}
-          <Link to="/auth/signup" className="font-weight-bold">
+          <Link to="/auth/signup" className="font-weight-bol">
             Create account
           </Link>
         </div>

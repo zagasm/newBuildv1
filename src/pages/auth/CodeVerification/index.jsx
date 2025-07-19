@@ -14,7 +14,6 @@ export function CodeVerification({ email }) {
   const [error, setError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const inputsRef = useRef([]);
-
   // Mask email
   const maskEmail = (email) => {
     const [username, domain] = email.split("@");
@@ -23,7 +22,6 @@ export function CodeVerification({ email }) {
     const maskedPart = "*".repeat(username.length - 2);
     return `${visiblePart}${maskedPart}@${domain}`;
   };
-
   // Handle input change
   const handleChange = (e, idx) => {
     const val = e.target.value;
@@ -36,7 +34,6 @@ export function CodeVerification({ email }) {
       }
     }
   };
-
   // Handle keyboard navigation
   const handleKeyDown = (e, idx) => {
     if (e.key === "Backspace" && !code[idx] && idx > 0) {
@@ -47,22 +44,18 @@ export function CodeVerification({ email }) {
       inputsRef.current[idx + 1].focus();
     }
   };
-
   const verifyCode = async () => {
     const joinedCode = code.join("");
     if (joinedCode.length < CODE_LENGTH) {
       setError("Please enter the full 6-digit code.");
       return;
     }
-
     setIsVerifying(true);
     setError("");
-
     try {
       const formPayload = new FormData();
       formPayload.append("email", email);
       formPayload.append("reset_key", joinedCode);
-
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/auth/verify_reset_code.php`,
         formPayload,
@@ -80,15 +73,12 @@ export function CodeVerification({ email }) {
       } else {
         setError(data.message || "Incorrect verification code. Please try again.");
       }
-
     } catch (err) {
-
       // if (err.response) {
         // Backend responded with an error
         const status = err.response.status;
         const message =
           err.response.data?.message || "An error occurred. Please try again.";
-
         if (status === 401) {
           setError(message || "Invalid or expired verification code.");
         } else {
@@ -98,23 +88,19 @@ export function CodeVerification({ email }) {
       //   // No response received
       //   setError("Network error. Please check your internet connection.");
       // }
-
       setIsVerifying(false);
     }
     finally {
       setIsVerifying(false);
     }
   };
-
-
   return (
     <>
       {!isVerified ? (
         <AuthContainer title="Verification code" description="We've sent a 6-digit code to">
-          <p className="text-center" style={{ color: "#8000FF", fontSize: "15px", marginTop: "-20px", fontFamily: "Inter" }}>
+          <p className="text-left ml-4" style={{ color: "#8000FF", fontSize: "15px",  fontFamily: "Inter" }}>
             {maskEmail(email)}
           </p>
-
           <form autoComplete="off" className="pr-3 pl-3" onSubmit={(e) => e.preventDefault()}>
             <div className="code_container row m-4 justify-content-center">
               {code.map((digit, idx) => (
@@ -139,22 +125,19 @@ export function CodeVerification({ email }) {
                 />
               ))}
             </div>
-
             {error && (
               <div className="text-danger text-center mb-3" style={{ fontSize: "14px" }}>
                 <i className="fa fa-exclamation-circle mr-1"></i> {error}
               </div>
             )}
-
             {success && (
               <div className="text-success text-center mb-3" style={{ fontSize: "14px" }}>
                 <i className="fa fa-check-circle mr-1"></i> Code verified successfully! Redirecting...
               </div>
             )}
-
             <button
               type="button"
-              className="btn submit_button btn-block"
+              className="bt submit_button btn-block"
               style={{ color: "white" }}
               onClick={verifyCode}
               disabled={isVerifying}
@@ -170,7 +153,6 @@ export function CodeVerification({ email }) {
                 </>
               )}
             </button>
-
             <div className="text-center mt-3 border-botto pb-1 mb-1">
               <p className="small text-muted">
                 Didn't receive the code?{" "}
@@ -179,8 +161,7 @@ export function CodeVerification({ email }) {
                 </Link>
               </p>
             </div>
-
-            <div className="py-3 text-center auth-footer">
+            <div className="py-3 text-center auth-foote">
               <span className="text-info" style={{ fontSize: "13px" }}>
                 <i className="fa fa-exclamation-circle"></i> Check your spam folder if you don't see the email
               </span>

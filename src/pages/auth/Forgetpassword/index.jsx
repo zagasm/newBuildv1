@@ -25,12 +25,12 @@ export function ForgetPassword() {
       formPayload.append("email", email);
      
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/send_reset_code.php`,
+        `${import.meta.env.VITE_API_URL}/api/v1/users/forgotten-password`,
         formPayload,
       );
       const data = response.data;
-// console.log(data);
-      if (data.success) {
+       console.log(data);
+      if (data.status) {
         showToast.success(data.message ||"Reset code sent successfully!");
         setShowCodeVerification(true);
         setResetCode(data.user.reset_key);
@@ -100,7 +100,7 @@ export function ForgetPassword() {
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.9, ease: "easeOut" }}
-              className="btn submit_button btn-block mb-5"
+              className="bt submit_button btn-block mb-5"
               type="submit"
               style={{ color: "white" }}
               disabled={isSubmitting}
@@ -115,7 +115,7 @@ export function ForgetPassword() {
               )}
             </motion.button>
 
-            <div className="py-3 text-center auth-footer">
+            <div className="py-3 text-center auth-foote">
               <span className="text-center">
                 <span className="fas fa-arrow-left ml-2"></span>{" "}
                 <Link className="font-weight-bold" to="/auth/signin">

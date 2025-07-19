@@ -18,12 +18,7 @@ import default_profilePicture from '../../assets/avater_pix.avif';
 import MobileNav from './MobileNav';
 import { useAuth } from '../auth/AuthContext';
 import NotificationCounter from '../Notification/NotificationCounter';
-const messages = [
-    { img: p1, content: 'Sample message content 1', sender: 'Alice', time: '1h' },
-    { img: p2, content: 'Sample message content 2', sender: 'Bob', time: '2h' },
-    { img: p3, content: 'Sample message content 3', sender: 'Charlie', time: '3h' },
-    { img: p4, content: 'Sample message content 4', sender: 'Diana', time: '4h' },
-];
+
 const Navbar = () => {
     const { user, logout } = useAuth();
     const Default_user_image = user.user_picture || default_profilePicture;
@@ -40,7 +35,7 @@ const Navbar = () => {
                     <ul className="navbar-nav middle_nav text-center">
                         <li className="nav-item">
                             <Link className="nav-link search_form" to="/explore">
-                               <i className='fa fa-search mr-2 ml-3'></i> <span>search for creator</span>
+                               <i className='fa fa-search mr-2 ml-3'></i> <span>search for memes, creator...</span>
                             </Link>
                         </li>
                           <li className="nav-item dropdown no-arrow mx- osahan-list-dropdown mr-5">

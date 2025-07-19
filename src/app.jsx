@@ -38,6 +38,9 @@ import Settings from "./pages/Profile/Settings/header.jsx";
 import Help from "./pages/Profile/Settings/HelpCenterSettings/HelpOutlet.jsx";
 import Faqs from "./pages/Profile/Settings/HelpCenterSettings/Faqs/index.jsx";
 import Templates from "./pages/Template/AllTemplate/index.jsx";
+import PrivacyPolicy from "./pages/auth/Privacy-policy/index.jsx";
+import TemplateLayout from "./pages/Template/TemplateLayout.jsx";
+import VewTemplates from "./pages/Template/viewTemplate/index.jsx";
 
 
 const MainLayout = () => (
@@ -88,9 +91,15 @@ export function App() {
             <Route path="chat" element={<Chat />} />
             <Route path="chat/:recipient_id" element={<Chat />} />
             <Route path="explore" element={<ExplorePage />} />
-            <Route path="template" element={<Templates />} />
+
+            <Route path="template" element={<TemplateLayout />} >
+              <Route index exact element={<Templates />} />
+              <Route path=":templateId" element={<VewTemplates />} />
+            </Route>
+
             <Route path="create-post" element={<CreatePost />} />
             <Route path="/posts/:postId" element={<Post />} />
+
             <Route  path="/help" element={<Help />} >
               <Route path="faqs" element={<Faqs />} />
             </Route>
@@ -103,6 +112,7 @@ export function App() {
 
         </Route>
 
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/page-not-found" element={<Error404 />} />
         <Route path="*" element={<Error404 />} />
       </Routes>

@@ -1,37 +1,52 @@
 body {
   font-family: 'Inter', sans-serif;
 }
-.inner_form_con{
+
+.inner_form_con {
   min-height: 100vh;
 }
+
+  .auth-background {
+    background: none;
+    background: #fff;
+    background: linear-gradient(180deg, #8F07E7 0%, #C207E7 100%);
+
+    /* fallback color if needed */
+  }
+
 .form_container {
   box-shadow: 0 0 20px rgba(154, 114, 194, 0.15);
-  border-radius: 25px;
+  border-radius: 10px;
   justify-content: center;
   align-items: center;
-  padding:15px 0px;
+  padding: 15px 0px;
+  background: #fff;
 }
 
 form .input {
   border: none;
-  box-shadow: 0 0 20px rgba(154, 114, 194, 0.15);
+  /* box-shadow: 0 0 20px rgba(154, 114, 194, 0.15); */
   border-radius: 10px;
   height: 60px;
   outline: none;
   margin-bottom: 20px;
   border: 1px solid red;
+  background: transparent;
 }
 
-.icon-form-control {
-  /* background-color: white; */
 
+form .input_box {
+  margin: 0px 10px;
 }
+ form label{
+    margin-left: 10px;
+  }
 
 form .input-icon {
   margin-top: -20px;
-  font-size: 25px;
+  font-size: 20px;
   padding-left: 10px;
-  color: #8000FF
+  /* color: #8000FF */
 }
 
 .input:focus {
@@ -46,8 +61,7 @@ form .input-icon {
 }
 
 form .submit_button {
-  background: linear-gradient(to right, #8000FF, rgba(228, 40, 235, 0.87));
-  color: white;
+  background: rgba(143, 7, 231, 1);
   height: 60px;
   border-radius: 15px;
   border: none;
@@ -56,10 +70,10 @@ form .submit_button {
   font-weight: bolder;
 }
 
-.submit_button:hover {
+/* .submit_button:hover {
   background: linear-gradient(to right, #a14bff, rgba(233, 77, 238, 1));
   box-shadow: 0 0 30px rgba(162, 75, 255, 0.171);
-}
+} */
 
 .api_btn {
   height: 50px;
@@ -116,20 +130,48 @@ form .code_container .code {
 }
 
 .auth_container .container_heading_text {
-  color: #8000FF;
-  font-size: 30px;
-  font-family: 'Inter'
+  /* color: #8000FF; */
+  font-size: 20px;
+  font-family: 'Inter';
+  text-align: left;
+  margin: 20px 0px;
 }
-#privacyAgree{
-    width: 20px;
-    height: 20px;
-  }
+
+#privacyAgree {
+  width: 20px;
+  height: 20px;
+}
+
+.custom-phone-input {
+  width: 100% !important;
+  padding-left: 60px !important;
+  height: 55px !important;
+  border-radius: 6px;
+  border: 1px solid #ced4da;
+  font-size: 14px;
+}
+
+.custom-phone-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.custom-phone-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  z-index: 2;
+}
+
 /* Mobile view: Remove background image */
 @media (max-width: 767px) {
   .auth_container .container_heading_text {
-    color: #8000FF;
-    font-size: 20px;
-    font-family: 'Inter'
+    font-size: 15px;
+    font-family: 'Inter';
+     margin: 0px;
+     padding: 0px;
   }
 
   .auth-background {
@@ -140,10 +182,28 @@ form .code_container .code {
 
   form .input-icon {
     font-size: 20px;
+    margin: 0px
   }
 
   form .input {
     height: 50px;
+    margin: 0px
+  }
+
+  form .input_box {
+    margin: 0px 00px;
+  }
+  form .field_margin_container_f_name{
+    margin-right:10px;
+  }
+   form .field_margin_container_l_name{
+    /* margin-left:px; */
+  }
+  form label{
+    margin: 0px;
+    padding-top: 10px;
+    font-size: 12px;
+    font-weight: 200;
   }
 
   .auth_container .auth_footer {
@@ -163,14 +223,16 @@ form .code_container .code {
   .form_container {
     box-shadow: none;
   }
-  .privacy_text{
+
+  .privacy_text {
     font-size: 13px;
   }
-  input.privacy_checker{
+
+  input.privacy_checker {
     width: 20px;
     height: 20px;
-    margin-bottom:-70px;
-    top:-4px;
+    margin-bottom: -70px;
+    top: -4px;
 
   }
 }

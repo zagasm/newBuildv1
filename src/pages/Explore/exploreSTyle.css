@@ -1,151 +1,215 @@
-/* Explore Page Enhancements */
-.explore-header {
-  /* padding-top: 10px; */
+/* Explore Page */
+.explore-page {
+  /* background-color: #f8f9fa; */
 }
 
-.explore-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #8000FF;
-  margin-bottom: 5px;
-  animation: fadeIn 0.6s ease-in-out;
-}
-
-.explore-subtitle {
-  font-size: 14px;
-  color: #777;
-}
-
-/* Main section styling */
-.explore-main-section {
-  padding-top: 60px;
-  background: #fff;
-  border-radius: 10px;
-  /* min-height: 90vh; */
-  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); */
-}
-
-/* Search box */
-.ig-search-container {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 10;
-}
-
-.ig-search-box {
-  background: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 30px;
+/* Search Header Container */
+.search-header-container {
+  display: flex;
+  align-items: center;
   padding: 8px 16px;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.explore-main-section{
+  margin-top: 50px;
+}
+/* Profile Picture */
+.profile-pic-container {
+  flex-shrink: 0;
 }
 
-.ig-search-box:hover {
-  background-color: #fefefe;
-  /* box-shadow: 0 0 8px rgba(128, 0, 255, 0.15); */
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f0f2f5;
+}
+
+/* Search Input Container */
+.search-input-container {
+  flex: 1;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #f0f2f5;
+  border-radius: 20px;
+  padding: 8px 16px;
+  height: 40px;
 }
 
 .search-icon {
+  color: #65676b;
+  margin-right: 8px;
   font-size: 18px;
-  color: #8000FF;
 }
 
-.ig-search-input {
+.search-input {
   flex: 1;
   border: none;
-  outline: none;
   background: transparent;
-  font-size: 16px;
+  outline: none;
+  font-size: 15px;
+  padding: 4px 0;
+}
+
+.search-input::placeholder {
+  color: #8a8d91;
+}
+
+.clear-search-btn {
+  background: none;
+  border: none;
+  color: #65676b;
+  padding: 0;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+/* Settings Button */
+.settings-btn {
+  background: none;
+  border: none;
+  color: #65676b;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.settings-btn:hover {
+  color: #8000FF;
+  transform: rotate(45deg);
+}
+
+/* Minimalist Tabs */
+.minimal-tabs-container {
+  position: relative;
+  margin: 0 16px 16px;
+}
+
+.minimal-tabs {
+  display: flex;
+}
+
+.minimal-tab {
+  flex: 1;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 15px;
+  font-weight: lighter;
+  color: #65676b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.minimal-tab:hover {
   color: #333;
 }
 
-/* Result list */
-.ig-search-result {
+.minimal-tab.active {
+  color: #161616;
+  font-weight: 600;
+}
+
+.minimal-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 100%;
+  height: 3px;
+  background: #8000FF;
+  border-radius: 3px 3px 0 0;
+}
+
+.minimal-tabs-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #ddd;
+  z-index: -1;
+}
+
+/* Content Area */
+.tab-content-area {
+  padding: 0 16px;
+}
+
+.search-results {
   background: #fff;
   border-radius: 12px;
-  /* border: 1px solid #eee; */
-  /* box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); */
   overflow: hidden;
-  max-height: 70vh;
-  overflow-y: auto;
-  /* padding-bottom: 50px; */
-  animation: fadeSlide 0.4s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.ig-search-item {
-  transition: background 0.25s, transform 0.2s;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-header-container {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  
+  .profile-pic {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .search-input-wrapper {
+    padding: 8px 12px;
+    height: 36px;
+  }
+  
+  .search-icon {
+    font-size: 16px;
+  }
+  
+  .search-input {
+    font-size: 14px;
+  }
+  
+  .settings-btn {
+    font-size: 18px;
+    padding: 6px;
+  }
+  
+  .minimal-tab {
+    padding: 14px 0;
+    font-size: 14px;
+  }
 }
 
-.ig-search-item:hover {
-  background-color: #f9f9f9;
-  transform: translateX(2px);
-  cursor: pointer;
-}
-
-.ig-search-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 12px;
-}
-
-.ig-search-name {
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-}
-
-.ig-search-fullname {
-  font-size: 12px;
-  color: #888;
-}
-
-.ig-search-no-result {
-  padding: 14px;
-  text-align: center;
-  color: #999;
-  font-size: 14px;
-}
-
-/* Button hover */
-.btn-sm:hover {
-  opacity: 0.95;
-  transform: scale(1.03);
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeSlide {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.ig-search-result .btn-sm.text-danger {
-  background: none;
-  border: none;
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-
-.ig-search-result .btn.text-danger {
-  background: none;
-  border: none;
-  font-size: 0.9rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.ig-search-result .text-secondary {
-  font-size: 0.85rem;
-  margin-top: 8px;
-  margin-left: 8px;
+@media (max-width: 480px) {
+  .search-header-container {
+    padding: 8px;
+  }
+  
+  .profile-pic {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .search-input-wrapper {
+    padding: 6px 12px;
+    height: 34px;
+  }
+  
+  .minimal-tabs-container {
+    margin: 0 8px 16px;
+  }
+  
+  .minimal-tab {
+    padding: 12px 0;
+    font-size: 13px;
+  }
 }
