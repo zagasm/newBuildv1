@@ -10,24 +10,26 @@ import { AuthProvider, useAuth } from "./pages/auth/AuthContext/index.jsx";
 import { PostProvider } from "./component/Posts/PostContext/index.jsx";
 import { HelmetProvider } from "react-helmet-async";
 import { ProfileProvider } from "./pages/Profile/profileContext/index.jsx";
-// Wrapper component to provide the `user` object
+import { ModalProvider } from "./component/assets/ModalContext/index.jsx";
+
 const RootWrapper = () => {
   const { user } = useAuth();
-  // console.log(user);
   return (
     <PostProvider user={user}>
       <ProfileProvider user={user}>
-        <App />
+        <App  />
       </ProfileProvider>
     </PostProvider>
   );
 };
-// Render the app
+
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <AuthProvider>
+    <AuthProvider> {/* ✅ Provides context for useAuth */}
       <HelmetProvider>
-        <RootWrapper />
+        <ModalProvider>
+          <RootWrapper /> {/* ✅ useAuth inside component */}
+        </ModalProvider>
       </HelmetProvider>
     </AuthProvider>
   </BrowserRouter>

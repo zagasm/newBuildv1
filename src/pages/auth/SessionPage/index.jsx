@@ -1,21 +1,38 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import LoadingOverlay from "../../../component/assets/projectOverlay.jsx";
+import { useEffect } from "react";
+import { useModal } from "../../../component/assets/ModalContext/index.jsx";
+// import { useModal } from "../../../component/assets/ModalContext"; // ✅ use useModal hook
 
 function Sessionpage() {
   const { user, isLoading } = useAuth();
+  // const { showModal } = useModal(); // ✅
 
-  // If authentication state is still loading, show a loading indicator
+  // useEffect(() => {
+  //   const condition = true; // ✅ Always true, adjust if needed
+
+  //   if (condition) {
+  //     showModal({
+  //       title: "Global Session Modal",
+  //       content: "This modal appears for all pages within SessionPage based on a condition.",
+  //       confirmText: "Okay",
+  //       cancelText: null,
+  //       onConfirm: () => {
+  //         console.log("User acknowledged modal");
+  //       }
+  //     });
+  //   }
+  // }, []);
+
   if (isLoading) {
-    return <LoadingOverlay/>; // Or a spinner component
+    return <LoadingOverlay />;
   }
 
-  // If user is not authenticated, redirect to the sign-in page
-  // if (!user) {
-  //   return <Navigate to="/auth/signin" replace />;
-  // }
+  if (!user) {
+    return <Navigate to="/auth/signin" replace />;
+  }
 
-  // If user is authenticated, render the child routes
   return <Outlet />;
 }
 

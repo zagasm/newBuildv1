@@ -53,10 +53,11 @@ function SideBarNav() {
                             <span className="link_name">Template</span>
                         </li>
                     </Link>
+                     
                 </ul>
             </div>
 
-            <div className="d-flex align-items-center osahan-post-header mb-3 people-list position-absolute bottom-0 ml-3">
+            {/* {user && <div className="d-flex align-items-center osahan-post-header mb-3 people-list position-absolute bottom-0 ml-3">
                 <div className="dropdown-list-image mr-3">
                     <img className="rounded-circle" src={Default_user_image} alt="User" />
                     <div className="status-indicator bg-success"></div>
@@ -64,12 +65,12 @@ function SideBarNav() {
                 <div className="font-weight-bold mr-2 side_bar_user_name">
                     <div className="text-truncate">
                         <Link to={'/myprofile'} className="text-dark">
-                            {user.user_lastname} {user.user_firstname}
+                            {user.user.last_name} {user.user.first_name}
                         </Link>
                     </div>
-                    <div className="small text-gray-500">@{user.user_name}</div>
+                    {user.user.username && <div className="small text-gray-500">@{user.user.username}</div>}
                 </div>
-            </div>
+            </div>} */}
         </aside>
     );
 }

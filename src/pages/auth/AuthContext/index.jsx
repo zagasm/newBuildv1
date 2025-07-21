@@ -17,13 +17,17 @@ export const AuthProvider = ({ children }) => {
   const login = (userData) => {
     setUser(userData);
     localStorage.setItem("userdata", JSON.stringify(userData));
-    localStorage.setItem("token", userData.token); // Optional
+    localStorage.setItem("token", userData.token); 
+    localStorage.setItem("gender", userData.gender); 
+    localStorage.setItem("date_of_birth", userData.date_of_birth); 
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("userdata");
     localStorage.removeItem("token");
+    localStorage.removeItem("gender");
+    localStorage.removeItem("date_of_birth");
   };
 
   const isAuthenticated = !!user;

@@ -13,7 +13,8 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 export function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const { GeSignupData } = useAuth();
+  const [fieldErrors, setFieldErrors] = useState({});
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,6 +33,7 @@ export function SignUp() {
       ...prev,
       [name]: value
     }));
+    setFieldErrors(prev => ({ ...prev, [name]: null }));
   };
 
   const handlePhoneChange = (value) => {
@@ -39,6 +41,7 @@ export function SignUp() {
       ...prev,
       phone: value
     }));
+    setFieldErrors(prev => ({ ...prev, phone: null }));
   };
 
   const validatePhoneNumber = (phone) => {
@@ -53,6 +56,7 @@ export function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
 
     if (!formData.first_name || !formData.last_name || !formData.phone || !formData.password) {
       showToast.error("Please fill in all fields");
@@ -66,30 +70,41 @@ export function SignUp() {
 
     setIsLoading(true);
     try {
-      const formDataEncoded = new URLSearchParams();
-      formDataEncoded.append("name", formData.first_name + " " + formData.last_name);
-      formDataEncoded.append("phone", formData.phone);
-      formDataEncoded.append("password", formData.password);
-      formDataEncoded.append("api_secret_key", formData.reset_key);
 
+      console.log(formData.phone);
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/users/register`,
-        formDataEncoded
+        {
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          phone: formData.phone,
+          password: formData.password
+        },
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
       );
-      const data = response.data;
-      if (data.success) {
-        showToast.success(data.message || "Registration successful!");
+
+      const { status, message, data } = response.data;
+      if (status) {
+        showToast.success(message || "Registration successful!");
         setIsLoading(false);
-        setFormData([]);
-        navigate("/auth/signin");
+        setFormData({});
+        const { user, token } = data;
+        login({ token, user });
+        navigate("/");
       } else {
-        showToast.error(data.message || "An error occurred. Please try again.");
-        setError(data.message || "An error occurred. Please try again.");
+        showToast.error(message || "An error occurred. Please try again.");
+        setError(message || "An error occurred. Please try again.");
       }
     } catch (err) {
       const message = err.response?.data?.message || "An error occurred. Please try again.";
-      showToast.error(message);
+      const errors = err.response?.data?.errors || {};
       setError(message);
+      setFieldErrors(errors);
+      showToast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -101,10 +116,10 @@ export function SignUp() {
     <AuthContainer title="Create your account" description="">
       <form autoComplete="off" className="pr-3 pl-3" onSubmit={handleSubmit}>
         {error && <div className="text-danger mb-3 alert alert-danger">{error}</div>}
-        
+
         <div className="row p-0 m-0">
           <div className="form-group col-md-6 col-6 p-0 m-0">
-            <label htmlFor="" >First name</label>
+            <label htmlFor="">First name</label>
             <div className="position-relative icon-form-contro input_box field_margin_container_f_name">
               <input
                 type="text"
@@ -116,10 +131,14 @@ export function SignUp() {
                 onChange={handleChange}
                 required
               />
+              {fieldErrors.first_name && (
+                <small className="text-danger d-block mt-1">{fieldErrors.first_name[0]}</small>
+              )}
             </div>
           </div>
+
           <div className="form-group col-md-6 col-6 p-0 m-0">
-            <label htmlFor="" >Last name</label>
+            <label htmlFor="">Last name</label>
             <div className="position-relative icon-form-contro input_box field_margin_container_l_name">
               <input
                 type="text"
@@ -131,12 +150,15 @@ export function SignUp() {
                 onChange={handleChange}
                 required
               />
+              {fieldErrors.last_name && (
+                <small className="text-danger d-block mt-1">{fieldErrors.last_name[0]}</small>
+              )}
             </div>
           </div>
         </div>
 
         <div className="form-group">
-          <label >Phone number</label>
+          <label>Phone number</label>
           <div className="position-relative icon-form-contro input_box">
             <PhoneInput
               country={'ng'}
@@ -151,11 +173,14 @@ export function SignUp() {
               specialLabel=""
               enableSearch
             />
+            {fieldErrors.phone && (
+              <small className="text-danger d-block mt-1">{fieldErrors.phone[0]}</small>
+            )}
           </div>
         </div>
 
         <div className="form-group">
-          <label >Password</label>
+          <label>Password</label>
           <div className="position-relative icon-form-control">
             <input
               type={showPassword ? "text" : "password"}
@@ -178,6 +203,9 @@ export function SignUp() {
               }}
               onClick={() => setShowPassword(!showPassword)}
             ></i>
+            {fieldErrors.password && (
+              <small className="text-danger d-block mt-1">{fieldErrors.password[0]}</small>
+            )}
           </div>
         </div>
 

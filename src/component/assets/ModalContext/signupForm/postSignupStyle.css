@@ -1,0 +1,371 @@
+
+
+/* container modal  */
+
+/* PostSignupFormModal.css */
+
+/* Modal Backdrop Styles */
+.global-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Modal Content Styles */
+.global-modal-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .global-modal-content {
+    padding: 15px;
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .global-modal-content {
+    padding: 10px;
+    max-width: 95%;
+  }
+  
+  .global-modal {
+    padding: 10px;
+  }
+}
+
+/* Animation Classes */
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transition: opacity 300ms;
+}
+
+.modal-exit {
+  opacity: 1;
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+
+.content-enter {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.content-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 300ms;
+}
+
+.content-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.content-exit-active {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 300ms;
+}
+
+
+
+
+
+
+
+/* style for Post Signup Form Modal */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.dob-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  gap: 10px;
+}
+
+.dob-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  outline: none;
+}
+
+.left-icon,
+.right-icon {
+  color: #999;
+  font-size: 16px;
+}
+
+.gender-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.gender-btn {
+  flex: 1;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.gender-btn.selected {
+  background-color: rgba(143, 7, 231, 0.1);
+  border-color: rgba(143, 7, 231, 1);
+  color: rgba(143, 7, 231, 1);
+}
+
+.instead_button {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* style for signup code component */
+
+
+.code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.code-box {
+  width: 95px;
+  height: 80px;
+  font-size: 24px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+  /* background:rgba(242, 242, 242, 1); */
+}
+
+.code-box:focus {
+  border-color: rgba(143, 7, 231, 1);
+  box-shadow: 0 0 5px rgba(143, 7, 231, 0.3);
+}
+
+.skip-btn:hover {
+  text-decoration: none;
+  color: #8f07e7;
+}
+
+.instead_button button {
+  background: rgba(242, 242, 242, 1);
+  width: 100%;
+  border: none;
+  padding: 10px;
+  margin: 10px 0px
+}
+
+
+
+.email-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0 10px;
+}
+
+.email-input {
+  flex: 1;
+  height: 40px;
+  border: none;
+  outline: none;
+  padding-left: 10px;
+}
+/* Animation for input, gender buttons, code boxes */
+input,
+.gender-btn,
+.code-box {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Gender buttons hover animation */
+.gender-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(143, 7, 231, 0.2);
+}
+
+/* Gender button active animation */
+.gender-btn:active {
+  transform: scale(0.95);
+}
+
+/* Input focus effect */
+input:focus {
+  /* box-shadow: 0 0 8px rgba(143, 7, 231, 0.3); */
+  border-color: rgba(143, 7, 231, 1);
+}
+
+/* Code box hover/focus animation */
+.code-box:hover,
+.code-box:focus {
+  transform: scale(1.05);
+}
+
+/* Submit button animation */
+.instead_button button {
+  transition: background 0.3s, transform 0.2s;
+}
+.instead_button button:hover {
+  background: rgba(143, 7, 231, 0.9);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.instead_button button:active {
+  transform: scale(0.97);
+}
+
+
+
+
+
+
+
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .dob-wrapper {
+    flex-direction: row;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .dob-input {
+    font-size: 14px;
+  }
+
+  .gender-buttons {
+    flex-direction: column;
+  }
+
+  .gender-buttons {
+    flex-direction: row;
+    /* KEEP buttons inline */
+    flex-wrap: wrap;
+    /* Allow wrapping if space is tight */
+    gap: 8px;
+  }
+
+  .code-inputs {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .code-box {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+
+  .instead_button {
+    flex-direction: column;
+  }
+
+  .instead_button button {
+    margin: 8px 0;
+  }
+
+  .email-input {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 5px;
+  }
+
+  h2 {
+    font-size: 20px;
+    /* text-align: center; */
+  }
+
+  p {
+    font-size: 14px;
+    /* text-align: center; */
+  }
+}
+@media (max-width: 480px) {
+  .code-box {
+    width: 42px;
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .gender-btn {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  h2 {
+    font-size: 18px;
+    /* text-align: center; */
+  }
+
+  p {
+    font-size: 13px;
+    /* text-align: center; */
+  }
+}
+
+

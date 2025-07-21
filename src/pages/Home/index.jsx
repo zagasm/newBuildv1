@@ -7,49 +7,52 @@ import RightBarComponent from '../pageAssets/rightNav';
 import './Homestyle.css';
 import FollowingPost from './FollowingPost';
 import ForYouPost from './ForYouPost';
+import Navbar from '../pageAssets/Navbar';
 
 function Home() {
     const { HomePostData } = usePost();
     const [activeTab, setActiveTab] = useState('following');
 
     return (
-        <div className="py-4">
-            <div className="container-fluid p-0">
-                <SideBarNav />
-                <div className="ro offset-xl-3 offset-lg-1 offset-md-1 bg-none home_section">
-                    <main className="col col-xl-6 col-lg-8 col-md-12 col-sm-12 col-12 main_container m-0 pt-5">
-                        <div className="car shadow-s mb-3 p-2">
-                            <div className="heading_tab_container">
-                                <button
-                                    className={`tab ${activeTab === 'following' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('following')}
-                                >
-                                    Following
-                                </button>
-                                <button
-                                    className={`tab ${activeTab === 'foryou' ? 'active' : ''}`}
-                                    onClick={() => setActiveTab('foryou')}
-                                >
-                                    For You
-                                </button>
+        <>
+            <div className="py-4">
+                <div className="container-fluid p-0">
+                    <SideBarNav />
+                    <div className="ro offset-xl-3 offset-lg-1 offset-md-1 bg-none home_section">
+                        <main className="col col-xl-6 col-lg-8 col-md-12 col-sm-12 col-12 main_container m-0 pt-5">
+                            <div className="car shadow-s mb-3 p-2">
+                                <div className="heading_tab_container">
+                                    <button
+                                        className={`tab ${activeTab === 'following' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('following')}
+                                    >
+                                        Following
+                                    </button>
+                                    <button
+                                        className={`tab ${activeTab === 'foryou' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('foryou')}
+                                    >
+                                        For You
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="posts-container">
-                            {activeTab === 'following' ? (
-                                <FollowingPost posts={HomePostData} />
-                            ) : (
-                                <ForYouPost posts={HomePostData} />
-                            )}
-                        </div>
-                    </main>
+                            <div className="posts-container">
+                                {activeTab === 'following' ? (
+                                    <FollowingPost posts={HomePostData} />
+                                ) : (
+                                    <ForYouPost posts={HomePostData} />
+                                )}
+                            </div>
+                        </main>
 
-                    <RightBarComponent>
-                        <SuggestedFriends />
-                    </RightBarComponent>
+                        <RightBarComponent>
+                            <SuggestedFriends />
+                        </RightBarComponent>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

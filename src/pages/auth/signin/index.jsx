@@ -43,6 +43,7 @@ export function Signin() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,40 +55,113 @@ export function Signin() {
       setShowPasswordField(true);
       return;
     }
+
     if (!validateForm()) return;
     setIsLoading(true);
-    try {
-      const formPayload = new FormData();
-      formPayload.append("login", formData.username_email);
-      formPayload.append("password", formData.password);
 
+    try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/users/login`,
-        formPayload
+        {
+          login: formData.username_email,
+          password: formData.password
+        },
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
       );
-      const data = response.data;
-      if (data.status === true) {
-        login({ token: data.data.token, user: data.data.user }); // assuming your AuthContext supports user info too
-        showToast.success(data.message || "Login successful!");
+
+      const { status, message, data, errors: serverErrors } = response.data;
+
+      if (status === true) {
+        const { token, user } = data;
+        login({ token, user });
+        showToast.success(message || "Login successful!");
         navigate("/");
       } else {
-        showToast.error(data.message || "Invalid credentials.");
-        setErrors({ server: data.message || "Invalid credentials." });
+        // Handle possible structured validation errors
+        const fieldErrors = {};
+        if (serverErrors && typeof serverErrors === "object") {
+          if (serverErrors.login) {
+            fieldErrors.username_email = serverErrors.login[0];
+          }
+          if (serverErrors.password) {
+            fieldErrors.password = serverErrors.password[0];
+          }
+        }
+
+        // Fallback for general error message
+        setErrors({ ...fieldErrors, server: message || "Invalid credentials." });
+        showToast.error(message || "Invalid credentials.");
       }
     } catch (err) {
-      const status = err.response?.status;
       const message = err.response?.data?.message || "An error occurred. Please try again.";
-      if (status === 401) {
-        showToast.error(message);
-        setErrors({ server: message });
-      } else {
-        showToast.error(message);
-        setErrors({ server: message });
+      const serverErrors = err.response?.data?.errors;
+
+      const fieldErrors = {};
+      if (serverErrors && typeof serverErrors === "object") {
+        if (serverErrors.login) {
+          fieldErrors.username_email = serverErrors.login[0];
+        }
+        if (serverErrors.password) {
+          fieldErrors.password = serverErrors.password[0];
+        }
       }
+
+      setErrors({ ...fieldErrors, server: message });
+      showToast.error(message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!showPasswordField) {
+  //     if (!formData.username_email.trim()) {
+  //       setErrors({ username_email: "Email or phone number is required" });
+  //       return;
+  //     }
+  //     setShowPasswordField(true);
+  //     return;
+  //   }
+  //   if (!validateForm()) return;
+  //   setIsLoading(false);
+
+  //   try {
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_API_URL}/api/v1/users/login`,
+  //       {
+  //         login: formData.username_email,
+  //         password: formData.password
+  //       },
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json"
+  //         }
+  //       }
+  //     );
+  //     const { status, message, data } = response.data;
+  //     const { token, user } = data;
+  //     if (status === true) {
+  //       login({ token, user }); 
+  //       showToast.success(message || "Login successful!");
+  //       navigate("/");
+  //     } else {
+  //       showToast.error(message || "Invalid credentials.");
+  //       setErrors({ server: message || "Invalid credentials." });
+  //     }
+  //   } catch (err) {
+  //     const status = err.response?.status;
+  //     const message = err.response?.data?.message || "An error occurred. Please try again.";
+  //     showToast.error(message);
+  //     setErrors({ server: message });
+  //   }
+
+  // };
   return (
     <AuthContainer title="Enter your email address or Phone number to login your account" >
       <motion.form
