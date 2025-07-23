@@ -39,7 +39,6 @@ import { ModalProvider } from "./component/assets/ModalContext/index.jsx";
 import PostSignupForm from "./component/assets/ModalContext/signupForm/PostSignUpForm.jsx";
 
 const MainLayout = () => (
-  
   <>
     <PostSignupForm /> 
     <Navbar />

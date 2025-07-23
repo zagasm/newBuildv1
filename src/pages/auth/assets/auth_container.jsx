@@ -2,24 +2,12 @@ import React, { Fragment, useState, useEffect } from 'react';
 import zagasmLogo from "../../../assets/ZAGASM_LOGO_ICON_V2_350PX.png";
 import './style.css';
 import { motion } from "framer-motion";
-// Import your slider images
-import slider1 from "../../../assets/welcome.jpg";
-import slider2 from "../../../assets/high-angle-woman-holding-smartphone.jpg";
-import slider3 from "../../../assets/social-media-marketing-concept-marketing-with-applications.jpg";
 import { Link } from 'react-router-dom';
 
 function AuthContainer({ title, description, children }) {
-    const images = [slider1, slider2, slider3];
-    const [currentImage, setCurrentImage] = useState(0);
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentImage((prev) => (prev + 1) % images.length);
-        }, 4000); // Change image every 4 seconds
-        return () => clearInterval(interval);
-    }, []);
     return (
         <Fragment>
-            <div className="  auth-background" >
+            <div className="auth-background" >
                 {/* Main Content */}
                 <div className="container-fluid position-relative auth_container">
                    <div className="row justify-content-center align-items-center d-flex align-center mb-5 inner_form_con">

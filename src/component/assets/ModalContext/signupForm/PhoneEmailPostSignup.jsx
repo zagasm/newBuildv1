@@ -27,15 +27,24 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Skip if the value hasn't changed
+    if (type === "email" && email === userupdate.email) {
+      setProceed(true);
+      return;
+    }
+    if (type === "phone" && phone === userupdate.phone) {
+      setProceed(true);
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage(null);
+    
     try {
       const response = await axios.patch(
         `${import.meta.env.VITE_API_URL}/api/v1/users/update/${userupdate.id}`,
-        {
-          phone: phone,
-          email: email,
-        },
+        type === "email" ? { email } : { phone },
         {
           headers: {
             "Content-Type": "application/json",
@@ -43,19 +52,29 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
           },
         }
       );
+      
       const result = response.data;
       if (result.status === true) {
         setProceed(true);
       } else {
         setErrorMessage(result.message || "Update failed.");
-        console.error("❌ Update failed:", result.message, result.errors || result);
       }
     } catch (error) {
-      const message =
-        error.response?.data?.message || "An error occurred while updating.";
-      const errors = error.response?.data?.errors;
-      setErrorMessage(message);
-      console.error("❌ Update failed:", message, errors || error.response?.data);
+      let errorMsg = "An error occurred while updating.";
+      const backendErrors = error.response?.data?.errors;
+      
+      if (backendErrors) {
+        // Handle both email and phone errors
+        if (backendErrors.email) {
+          errorMsg = backendErrors.email[0];
+        } else if (backendErrors.phone) {
+          errorMsg = backendErrors.phone[0];
+        } else if (error.response?.data?.message) {
+          errorMsg = error.response.data.message;
+        }
+      }
+      
+      setErrorMessage(errorMsg);
     } finally {
       setIsLoading(false);
     }
@@ -93,13 +112,6 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
           </Alert>
         )}
 
-        {/* Success Message Alert */}
-        {successMessage && (
-          <Alert variant="success" onClose={() => setSuccessMessage(null)} dismissible>
-            {successMessage}
-          </Alert>
-        )}
-
         <form onSubmit={handleSubmit}>
           {type === "email" ? (
             <div className="form-group">
@@ -120,9 +132,11 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
             <div className="form-group">
               <label className="mb-2">Phone Number</label>
               <PhoneInput
-                country={"ng"} // Set to "us" if preferred
+                country={"ng"}
                 value={phone}
-                onChange={setPhone}
+                onChange={(value, country, e, formattedValue) => {
+                  setPhone(formattedValue || value);
+                }}
                 inputStyle={{
                   width: "100%",
                   borderRadius: "6px",
@@ -131,6 +145,7 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
                   height: "40px",
                 }}
                 containerStyle={{ width: "100%" }}
+                specialLabel=""
               />
             </div>
           )}

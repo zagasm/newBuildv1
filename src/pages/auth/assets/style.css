@@ -164,6 +164,25 @@ form .code_container .code {
   color: #888;
   z-index: 2;
 }
+.resend_code_container{
+  display: flex;
+  justify-content: space-between;
+  /* flex-direction: column; */
+  align-items: center;
+  margin-top: 20px;
+}
+.resend_code_container .resend_code{
+  color: rgba(143, 7, 231, 1);
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}
+.resend_code_container .code_timmer{
+  color: rgba(143, 7, 231, 1);
+
+}
+
+
 
 /* Mobile view: Remove background image */
 @media (max-width: 767px) {

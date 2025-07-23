@@ -72,9 +72,7 @@ export function Signin() {
           }
         }
       );
-
       const { status, message, data, errors: serverErrors } = response.data;
-
       if (status === true) {
         const { token, user } = data;
         login({ token, user });

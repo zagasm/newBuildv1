@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import PostSignupFormModal from "./ModalContainer";
 import PhoneEmailPostSignup from "./PhoneEmailPostSignup";
 import "./postSignupStyle.css";
@@ -12,7 +12,73 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
     const [switchToForm, setSwitchToForm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [timer, setTimer] = useState(10); // 10 minutes in seconds
+    const [canResend, setCanResend] = useState(false);
     const { login } = useAuth();
+
+    useEffect(() => {
+        // Start countdown timer
+        const interval = setInterval(() => {
+            setTimer(prevTimer => {
+                if (prevTimer <= 1) {
+                    clearInterval(interval);
+                    setCanResend(true);
+                    return 0;
+                }
+                return prevTimer - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const handleResendCode = async () => {
+        if (!canResend) return;
+
+        setIsLoading(true);
+        setErrorMessage(null);
+
+        try {
+            const verificationType = type.includes("email") ? "email_verification" : "phone_verification";
+            const contact = type.includes("email") ? userupdate.email : userupdate.phone;
+
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/api/v1/users/resend-verification`,
+                {
+                    contact,
+                    type: verificationType
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const result = response.data;
+
+            if (result.status === true) {
+                setSuccessMessage("Verification code resent successfully!");
+                setTimer(600); // Reset timer to 10 minutes
+                setCanResend(false);
+            } else {
+                setErrorMessage(result.message || "Failed to resend verification code.");
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || "Failed to resend verification code. Please try again.";
+            setErrorMessage(message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleChange = (value, index) => {
         if (!/^\d?$/.test(value)) return;
@@ -50,6 +116,7 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
                 {
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
                     },
                 }
             );
@@ -58,17 +125,13 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
 
             if (result.status === true) {
                 setSuccessMessage("Verification successful!");
-                console.log("✅ OTP verified:", result.message);
                 const user = userupdate;
                 login({ token, user });
             } else {
                 setErrorMessage(result.message || "Verification failed. Please try again.");
-                console.error("❌ Verification failed:", result.message);
             }
         } catch (error) {
-            // Handle validation errors and other API errors
             if (error.response?.status === 422) {
-                // Handle validation errors
                 const errorData = error.response.data;
                 if (errorData.errors?.otp) {
                     setErrorMessage(errorData.errors.otp.join(' '));
@@ -76,7 +139,6 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
                     setErrorMessage(errorData.message || "Validation failed. Please check your input.");
                 }
             } else {
-                // Handle other errors
                 const message = error.response?.data?.message || "Something went wrong. Please try again.";
                 setErrorMessage(message);
             }
@@ -109,6 +171,13 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
                 <h2>We sent a code to your {type.includes("email") ? "email" : "phone"}</h2>
                 <p>Enter the 5-digit verification code</p>
 
+                {/* Success Message Alert */}
+                {successMessage && (
+                    <Alert variant="success" onClose={() => setSuccessMessage(null)} dismissible>
+                        {successMessage}
+                    </Alert>
+                )}
+
                 {/* Error Message Alert */}
                 {errorMessage && (
                     <Alert variant="danger" onClose={() => setErrorMessage(null)} dismissible>
@@ -130,7 +199,16 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
                         />
                     ))}
                 </div>
-
+                <div className="resend_code_container">
+                    <span
+                        className={`resend_code ${canResend ? 'active' : ''}`}
+                        onClick={handleResendCode}
+                        disabled={!canResend || isLoading}
+                    >
+                        {isLoading ? 'Sending...' : 'Resend Code'}
+                    </span>
+                    <div>Code expires in <span className="code_timer">{formatTime(timer)}</span></div>
+                </div>
                 <div className="instead_button">
                     <button onClick={() => setSwitchToForm(true)}>
                         Use {type.includes("email") ? "phone number" : "email"} instead
