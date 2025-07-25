@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FiEdit, FiBell, FiMoreHorizontal, FiCamera, FiHeart } from 'react-icons/fi';
 
-import './Profilestyle.css';
+// import './Profilestyle.css';
 import { usePost } from '../../component/Posts/PostContext';
 import SinglePostTemplate, { PostContent } from '../../component/Posts/single';
 import { useLocation, useParams } from 'react-router-dom';
@@ -31,7 +31,7 @@ function UserPost() {
                 <div className="post-grid-overlay">
                   {/* Love icon at bottom right */}
                   <div className="chart-icon-container d-flex">
-                    <img src={post_chart} alt="" className="chart-icon" /> <span style={{marginTop:'5px'}}>{post.views_formatted}</span>
+                    <img src={post_chart} alt="" className="chart-icon" /> <span style={{ marginTop: '5px' }}>{post.views_formatted}</span>
                   </div>
                 </div>
               </div>

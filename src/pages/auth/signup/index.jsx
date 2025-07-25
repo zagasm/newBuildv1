@@ -10,7 +10,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
-export function SignUp() {
+export function SignUp({modal}) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
@@ -94,7 +94,7 @@ export function SignUp() {
         setFormData({});
         const { user, token } = data;
         login({ token, user });
-        navigate("/");
+         {!modal && navigate("/")}
       } else {
         showToast.error(message || "An error occurred. Please try again.");
         setError(message || "An error occurred. Please try again.");
@@ -113,8 +113,8 @@ export function SignUp() {
   const isFormComplete = formData.first_name && formData.last_name && formData.phone && formData.password;
 
   return (
-    <AuthContainer title="Create your account" description="">
-      <form autoComplete="off" className="pr-3 pl-3" onSubmit={handleSubmit}>
+    <AuthContainer modal={modal} title="Create your account" description="">
+      <form autoComplete="off" className={modal?'':"pr-3 pl-3"} onSubmit={handleSubmit}>
         {error && <div className="text-danger mb-3 alert alert-danger">{error}</div>}
 
         <div className="row p-0 m-0">
@@ -181,7 +181,7 @@ export function SignUp() {
 
         <div className="form-group">
           <label>Password</label>
-          <div className="position-relative icon-form-control">
+          <div className="position-relative icon-form-control input_box">
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -210,7 +210,7 @@ export function SignUp() {
         </div>
 
         <button
-          className="bt submit_button btn-block input_box"
+          className="bt submit_button btn-block input_bo"
           type="submit"
           disabled={!isFormComplete || isLoading}
           style={{
@@ -232,7 +232,7 @@ export function SignUp() {
           )}
         </button>
 
-        <div className="text-center mt-3 border-botto pb-3 mb-3">
+       { !modal && <> <div className="text-center mt-3 border-botto pb-3 mb-3">
           <p className="small text-muted">Or continue with</p>
           <div className="row">
             <div className="col-6">
@@ -253,7 +253,8 @@ export function SignUp() {
           <span>
             Already have an account? <Link className="font-weight-bol" to="/auth/signin">Sign in</Link>
           </span>
-        </div>
+        </div> </>}
+
       </form>
     </AuthContainer>
   );

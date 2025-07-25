@@ -8,23 +8,29 @@ import {
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 import PostSignupFormModal from "./ModalContainer";
-import SignUpCodecomponent from "./SignUpCodecomponent"; // Replace with your actual path
+import SignUpCodecomponent from "./SignUpCodecomponent";
 import "./postSignupStyle.css";
 import { useAuth } from "../../../../pages/auth/AuthContext";
 import axios from "axios";
 
 const PostSignupForm = () => {
-  const { user } = useAuth();
-
-  // Conditionally render the page only if required
-  if (user.user.gender != null || user.user.gender != undefined) return null;
-
+  const { user, isAuthenticated } = useAuth();
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
   const [tosendUserdata, settosendUserdata] = useState();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dateInputRef = useRef(null);
+
+  // Return null if user is not authenticated or doesn't exist
+  if (!isAuthenticated || !user?.user) {
+    return null;
+  }
+
+  // Return null if user already has gender set
+  if (user.user.gender) {
+    return null;
+  }
 
   const handleWrapperClick = () => {
     if (dateInputRef.current?.showPicker) {
@@ -35,6 +41,7 @@ const PostSignupForm = () => {
   };
 
   const isFormValid = dob && gender;
+  
   const isAtLeast15 = (dob) => {
     const birthDate = new Date(dob);
     const today = new Date();
@@ -63,35 +70,37 @@ const PostSignupForm = () => {
       const response = await axios.patch(
         `${import.meta.env.VITE_API_URL}/api/v1/users/update/${user.user.id}`,
         {
-          gender: gender, // e.g. "male"
-          date_of_birth: dob, // e.g. "1993-11-28"
+          gender: gender,
+          date_of_birth: dob,
         },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`, // Add token if required
+            Authorization: `Bearer ${user.token}`,
           },
         }
       );
+      
       const result = response.data;
       if (result.status === true) {
         settosendUserdata(result.data);
         setFormSubmitted(true);
       } else {
-        console.error("❌ Update failed:", result.message, result.errors || result);
+        console.error("Update failed:", result.message, result.errors || result);
       }
     } catch (error) {
       const message =
         error.response?.data?.message || "An error occurred while updating.";
       const errors = error.response?.data?.errors;
-
-      console.error("❌ Update failed:", message, errors || error.response?.data);
+      console.error("Update failed:", message, errors || error.response?.data);
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (formSubmitted) return <SignUpCodecomponent token={user.token} userupdate={tosendUserdata} type="phone" />;
+  if (formSubmitted) {
+    return <SignUpCodecomponent token={user.token} userupdate={tosendUserdata} type="phone" />;
+  }
 
   return (
     <PostSignupFormModal>
@@ -111,7 +120,6 @@ const PostSignupForm = () => {
         <p>Just a few more details to completing your profile</p>
 
         <form onSubmit={handleSubmit}>
-          {/* Date of Birth */}
           <div className="form-group">
             <label className="p-0 m-0 mb-2">Date of Birth</label>
             <motion.div
@@ -130,15 +138,13 @@ const PostSignupForm = () => {
                 value={dob}
                 max={new Date(
                   new Date().setFullYear(new Date().getFullYear() - 15)
-                ).toISOString().split("T")[0]} // restrict max date to today - 15 years
+                ).toISOString().split("T")[0]}
                 onChange={(e) => setDob(e.target.value)}
               />
-
               <FaChevronDown className="right-icon" />
             </motion.div>
           </div>
 
-          {/* Gender */}
           <div className="form-group">
             <label className="m-0 mb-2">Gender</label>
             <div className="gender-buttons">

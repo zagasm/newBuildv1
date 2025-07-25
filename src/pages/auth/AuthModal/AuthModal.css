@@ -1,0 +1,115 @@
+/* AuthModal.css */
+.auth-modal {
+    max-width: 500px;
+    width: 90%;
+    margin: 0 auto;
+    overflow: auto;
+    padding: 0px;
+}
+
+.auth-modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    border: none;
+    min-height: 90vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding:0px;
+    background-color: rgba(247, 246, 246, 0.911);
+}
+.auth-modal-body {
+    padding: 0;
+    /* background-color: transparent; */
+    overflow: auto;
+}
+.auth-tabs {
+    border-bottom: none;
+}
+
+.auth-tabs .nav-link {
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: #6c757d;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.auth-tabs .nav-link.active {
+    color: #8F07E7;
+    background-color: transparent;
+    border-bottom: 3px solid #8F07E7;
+}
+
+.auth-tabs .nav-link:hover {
+    color: #8F07E7;
+    border-color: transparent;
+}
+
+.auth-content {
+    padding: 2rem;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .auth-modal {
+        width: 95%;
+        margin: 10px auto;
+    }
+    .auth-content {
+        padding: 1.5rem;
+        min-height: 350px;
+    }
+    .auth-tabs .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    .auth-modal-content {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        border: none;
+        min-height: 100vh
+    }
+}
+
+/* Animation for modal appearance */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal.fade .modal-dialog {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Custom scrollbar for modal content */
+.auth-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.auth-modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.auth-modal-body::-webkit-scrollbar-thumb {
+    background: #8F07E7;
+    border-radius: 10px;
+}
+
+.auth-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #7d06cf;
+}

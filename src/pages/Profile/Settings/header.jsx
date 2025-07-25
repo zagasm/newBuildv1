@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ProfileHeader from '../Header.jsx';
 import { Outlet } from "react-router-dom";
 import SideBarNav from "../../pageAssets/sideBarNav.jsx";
 import AccountSettings from "./AccountSideBar.jsx";

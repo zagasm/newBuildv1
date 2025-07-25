@@ -68,6 +68,7 @@ form .submit_button {
   box-shadow: 0 0 20px rgba(128, 0, 255, 0.15);
   transition: 0.4ms ease-in-out;
   font-weight: bolder;
+  margin:0px
 }
 
 /* .submit_button:hover {

@@ -133,6 +133,23 @@
     display: none;
 }
 
+.mobile_navbar_container .create_post {
+    position: fixed;
+    right: 30px;
+    bottom: 100px;
+    background: rgba(143, 7, 231, 1);
+    padding: 20px;
+    border-radius: 50%;
+    box-shadow: -13px 10px 5px 0px rgba(128, 128, 128, 0.02);
+
+}
+
+.mobile_navbar_container .create_post img {
+    fill: white;
+    color: white;
+    filter: brightness(0) invert(20);
+}
+
 .mobile_navbar_container ul {
     display: flex;
     justify-content: space-around;
@@ -145,7 +162,7 @@
 .mobile_navbar_container ul a {
     font-size: 25px;
     padding: 0px;
-
+    margin-top: 2px;
 }
 
 .mobile_navbar_container ul .mobile_icon_name {
@@ -160,7 +177,7 @@
     box-shadow: 0 0 20px rgba(154, 114, 194, 0.15);
     border-radius: 15px;
     display: flex;
-
+    /* margin-top:-1px */
 
 }
 

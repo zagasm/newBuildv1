@@ -1,3 +1,5 @@
+/* CreatePost.css */
+
 .image-preview img {
   border: 1px solid #ccc;
   padding: 2px;
@@ -13,12 +15,9 @@
   background-color: #e2e6ea;
 }
 
-
 .dropzone-custom.active {
   background-color: #8000FF;
-  ;
   border-color: #8000FF;
-  ;
   color: #343a40;
 }
 
@@ -26,7 +25,6 @@
   font-size: 48px;
   color: #8000FF;
 }
-
 
 .image-preview {
   width: 120px;
@@ -63,15 +61,13 @@
   transition: background-color 0.3s ease;
 }
 
-.dropzone-custom:hover {
+/* .dropzone-custom:hover {
   background-color: #e9ecef;
-}
+} */
 
-.dropzone-custom.active {
+/* .dropzone-custom.active {
   background-color: #e9ecef;
-}
-
-
+} */
 
 .carousel img {
   object-fit: cover;
@@ -94,126 +90,158 @@
   transition: 0.3s ease-in-out;
 }
 
-/* Tab container */
-.create-post-row .nav-tabs {
-  border-bottom: 2px solid #dee2e6;
+/* Facebook-like styling */
+.post-creator-container {
+  background: #fff;
+  border-radius: 8px;
 }
 
-.create-post-row .nav-tabs .nav-item {
-  width: 50%;
-   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.11);
-   /* border-radius:  50px; */
+.post-footer {
+  border-top: 1px solid #ddd;
 }
-/* Inactive tabs */
-.create-post-row .nav-tabs .nav-link {
-  color: #333;
-  border: none;
+
+.post-footer span {
+  font-size: 25px;
+}
+
+.privacy-settings .dropdown-toggle {
+  font-size: 13px;
   padding: 10px 20px;
-  font-weight: 500;
-  background: #f8f9fa;
-  
-  margin-right: 5px;
-  transition: background-color 0.3s;
-  width: 100%;
-
-}
-
-/* Active tab */
-.create-post-row .nav-tabs .nav-link.active {
-  background-color: #8000FF;
-  /* Bootstrap primary */
-  color: white;
-  font-weight: bold;
+  background-color: rgba(249, 239, 255, 1);
   border: none;
-  width: 100%;
-  
-}
-
-/* Hover effect */
-.create-post-row .nav-tabs .nav-link:hover {
-  background-color: #e2e6ea;
-}
-
-/* Style for the Prev/Next button containers */
-.carousel-control-prev,
-.carousel-control-next {
-  width: 20px;
-  height: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: #00000091;
-  border-radius: 50%;
-  opacity: 0.85;
-  transition: opacity 0.3s ease;
-}
-
-/* Arrow icons - white */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  background-size: 70% 70%;
-  background-position: center;
-  background-repeat: no-repeat;
-  /* filter: invert(3) brightness(5); Ensures icon stays white */
-  color: white;
-  font-weight: bolder;
-}
-
-/* Hover effect for buttons */
-.carousel-control-prev:hover,
-.carousel-control-next:hover {
-  opacity: 1;
-}
-
-/* Remove these existing styles: */
-.dropzone-custom {
-  background-color: #f8f9fa;
-  border: 20px dashed #ced4da;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  display: flex;
-}
-
-.dropzone-custom:hover {
-  background-color: #e9ecef;
-}
-
-.dropzone-custom.active {
-  background-color: #e9ecef;
-}
-
-/* Add this new style: */
-#image-upload-input {
-  display: none;
-}
-
-.img_upload_container {
-  background-color: white;
   color: #8000FF;
-  border: 1px solid;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.11);
-  cursor: pointer;
-  width: 50%;
+}
+
+.privacy-settings .dropdown-menu {
+  font-size: 14px;
+}
+
+.image-preview-container {
+  background: #f0f2f5;
+  border-radius: 8px;
+}
+
+.color-pickers {
+  background: #f0f2f5;
+  border-radius: 8px;
+}
+
+.btn-outline-primary {
+  border-color: #8000FF;
+  color: #8000FF;
+}
+
+/* .btn-outline-primary:hover {
+  background-color: #8000FF;
+  color: white;
+} */
+
+.btn-primary {
+  background-color: #8000FF;
+  border-color: #8000FF;
+}
+
+.btn-primary:hover {
+  background-color: #6a00d4;
+  border-color: #6a00d4;
+}
+
+/* Tab styling */
+.nav-tabs .nav-link {
+  border: none;
+  color: #65676b;
+  font-weight: 600;
+  padding: 10px 16px;
+}
+
+.nav-tabs .nav-link.active {
+  color: #8000FF;
+  border-bottom: 3px solid #8000FF;
+  background: transparent;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #ddd;
+}
+
+.buttons button {
+  border-radius: 20px;
+  padding: 10px 20px;
+  border: none;
   transition: 0.3s ease-in-out;
 }
 
-.img_upload_container:hover {
-  box-shadow: none;
+.buttons button.template_button {
+  background: white;
+  border: 1px solid rgba(143, 7, 231, 1);
+  color: rgba(143, 7, 231, 1);
 }
 
-@media (max-width: 760px) {
-  .img_upload_container {
-    width: 100%;
-  }
+.buttons button.template_button:hover {
+  background: rgba(143, 7, 231, 1);
+  color: white;
+
 }
 
-@media (max-width: 1760px) {
+.buttons button.post_button {
+  background: rgba(143, 7, 231, 1);
+  color: white;
+
+}
+
+.buttons button.post_button:hover {
+  background: white;
+  border: 1px solid rgba(143, 7, 231, 1);
+  color: rgba(143, 7, 231, 1);
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .create-post-row {
-    padding-left: 10px;
+    padding-left: 0;
   }
-}
-@media (max-width: 760px) {
- .create-post-row{
-  padding-left: 0px;
-}
+
+  .post-footer {
+    flex-direction: column;
+    /* gap: 10px; */
+  }
+
+  .post-footer .d-flex {
+    /* width: 100%; */
+    /* justify-content: space-between; */
+  }
+
+
+  .buttons button {
+    border-radius: 20px;
+    padding: 5px 10px;
+    border: none;
+    transition: 0.3s ease-in-out;
+    cursor: pointer;
+  }
+
+  .buttons button.template_button {
+    background: white;
+    border: 1px solid rgba(143, 7, 231, 1);
+    color: rgba(143, 7, 231, 1);
+  }
+
+  .buttons button.template_button:hover {
+    background: rgba(143, 7, 231, 1);
+    color: white;
+
+  }
+
+  .buttons button.post_button {
+    background: rgba(143, 7, 231, 1);
+    color: white;
+
+  }
+
+  .buttons button.post_button:hover {
+    background: white;
+    border: 1px solid rgba(143, 7, 231, 1);
+    color: rgba(143, 7, 231, 1);
+  }
 }

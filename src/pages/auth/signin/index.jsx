@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import googleLogo from "../../../assets/google-logo.png";
 import axios from "axios";
 
-export function Signin() {
+export function Signin({ modal }) {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -77,7 +77,8 @@ export function Signin() {
         const { token, user } = data;
         login({ token, user });
         showToast.success(message || "Login successful!");
-        navigate("/");
+
+        { !modal && navigate("/") }
       } else {
         // Handle possible structured validation errors
         const fieldErrors = {};
@@ -161,13 +162,13 @@ export function Signin() {
 
   // };
   return (
-    <AuthContainer title="Enter your email address or Phone number to login your account" >
+    <AuthContainer modal={modal} title="Enter your email address or Phone number to login your account" >
       <motion.form
         onSubmit={handleSubmit}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="pr-3 pl-3">
+        className={modal ? 'pb-5' : "pr-3 pl-3"}>
         {errors.server && (
           <motion.div
             className="alert alert-danger m-0 mt-3 p-1 pl-2"
@@ -220,11 +221,11 @@ export function Signin() {
             {errors.password && (
               <div className="invalid-feedback d-block m-0 p-0">{errors.password}</div>
             )}
-            <div className="px- text-right">
+            {!modal && <div className="px- text-right">
               <Link to="/auth/forget-password" style={{ color: '#8000FF' }}>
                 Forgot password?
               </Link>
-            </div>
+            </div>}
           </motion.div>
         )}
         {/* Submit Button */}
@@ -258,7 +259,7 @@ export function Signin() {
             </>
           )}
         </motion.button>
-        <div className="text-center mt-3 border-botto pb-3 mb-3">
+        {!modal && <> <div className="text-center mt-3 border-botto pb-3 mb-3">
           <p className="small text-muted">Or continue with</p>
           <div className="row">
             <div className="col-6">
@@ -274,12 +275,13 @@ export function Signin() {
             </div>
           </div>
         </div>
-        <div className="text-center mt-4">
-          Don't have an account?{" "}
-          <Link to="/auth/signup" className="font-weight-bol">
-            Create account
-          </Link>
-        </div>
+          <div className="text-center mt-4">
+            Don't have an account?{" "}
+            <Link to="/auth/signup" className="font-weight-bol">
+              Create account
+            </Link>
+          </div> </>}
+
       </motion.form>
     </AuthContainer>
   );

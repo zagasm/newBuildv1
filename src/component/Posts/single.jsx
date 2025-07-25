@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import friendImage from '../../assets/img/IMG_9488.jpeg';
 import SinglePostLoader from '../assets/Loader/SinglePostLoader';
-import { Carousel } from 'react-bootstrap'; // Import Carousel from react-bootstrap
+import { Carousel } from 'react-bootstrap';
 import './postcss.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import TimeAgo from '../assets/Timmer/timeAgo';
@@ -29,8 +29,8 @@ function SinglePostTemplate({ data, hideCommentButton = false }) {
     const [loading, setLoading] = useState(true);
     const [progress, setProgress] = useState(0);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [showCommentsModal, setShowCommentsModal] = useState(false); // Add this state
-    // console.log(data);
+    const [showCommentsModal, setShowCommentsModal] = useState(false);
+
     useEffect(() => {
         if (data) {
             const timer = setInterval(() => {
@@ -52,18 +52,41 @@ function SinglePostTemplate({ data, hideCommentButton = false }) {
         return <SinglePostLoader />;
     }
 
+    // Transform new data structure to match expected format
+    const transformedData = {
+        ...data,
+        user_picture: data.user?.profile_picture || friendImage,
+        user_name: data.user?.username || 'Anonymous',
+        user_id: data.user_id,
+        time: data.created_at,
+        text: data.text_content,
+        photos: data.media_path?.map(media => ({ source: media })) || [],
+        background_color_code: data.background_color,
+        text_color_code: data.text_color,
+        comments: data.comment_count,
+        views: data.view_count,
+        reaction_haha_count: data.like_count,
+        i_react: data.is_liked,
+        post_id: data.id
+    };
+
     return (
         <div className="box shadow-s border-0 rounded bg-white osahan-post">
-            <PostHeader data={data} />
+            <PostHeader data={transformedData} />
             <PostContent
-                data={data}
+                data={transformedData}
                 currentImageIndex={currentImageIndex}
                 onImageClick={setCurrentImageIndex}
             />
-            <PostFooter data={data} totalComment={data.comments} hideCommentButton={hideCommentButton} />
+            <PostFooter
+                data={transformedData}
+                totalComment={transformedData.comments}
+                hideCommentButton={hideCommentButton}
+            />
         </div>
     );
 }
+
 function PostHeader({ data }) {
     const [showModal, setShowModal] = useState(false);
 
@@ -71,25 +94,24 @@ function PostHeader({ data }) {
         e.preventDefault();
         setShowModal(true);
     };
+
     return (
         <div className="p-3 d-flex align-items-center border-bottom osahan-post-header m-0" style={{ background: '#edf2fe75' }}>
-            <div className="dropdown-list-image mr-3" style={{ background: '#edf2fe75' }} >
+            <div className="dropdown-list-image mr-3" style={{ background: '#edf2fe75' }}>
                 <img
                     className="rounded-circle"
-                    src={data.user_picture || friendImage}
+                    src={data.user_picture}
                     alt={data.user_name}
                 />
-                <div className={`status-indicator ${data.post_author_online ? 'bg-success' : 'bg-secondary'}`}></div>
+                <div className="status-indicator bg-secondary"></div>
             </div>
             <div className="font-weight-bold">
                 <div className="text-truncate">
-                    <Link to={data.user_id} className="text-dark">
+                    <Link to={`/profile/${data.user_id}`} className="text-dark">
                         {data.user_name}
                     </Link>
                 </div>
                 <div className="small text-gray-500">
-                    {/* {new Date(data.time).toLocaleString()} */}
-                    {/* {data.time} */}
                     <img className='mr-1' style={{ width: '16px' }} src={globe_icon} alt="" />
                     <TimeAgo date={data.time} />
                 </div>
@@ -104,7 +126,6 @@ function PostHeader({ data }) {
                         aria-expanded="false">
                         <i className="feather-more-vertical"></i>
                     </button>
-
                 </div>
                 {showModal && (
                     <PostSettingsModal
@@ -117,7 +138,8 @@ function PostHeader({ data }) {
         </div>
     );
 }
-export function PostContent({ data, currentImageIndex, onImageClick, profileData }) {
+
+export function PostContent({ data, currentImageIndex, onImageClick }) {
     const [imageLoadError, setImageLoadError] = useState({});
     const [imageLoading, setImageLoading] = useState(true);
     const [showGallery, setShowGallery] = useState(false);
@@ -143,14 +165,6 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
         setShowGallery(true);
     };
 
-    const navigateGallery = (direction) => {
-        setSelectedImageIndex((prevIndex) => {
-            const newIndex = prevIndex + direction;
-            if (newIndex >= 0 && newIndex < data.photos.length) return newIndex;
-            return prevIndex;
-        });
-    };
-
     const handleImageError = (index) => {
         setImageLoadError(prev => ({ ...prev, [index]: true }));
     };
@@ -160,7 +174,7 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
     };
 
     return (
-        <div className="border-botto osahan-post-body " style={{ background: '#edf2fe75' }}>
+        <div className="border-botto osahan-post-body" style={{ background: '#edf2fe75' }}>
             {/* TEXT CONTENT */}
             {data.text && (
                 <div className="post-text-container text-dark" style={{ background: '#edf2fe75' }}>
@@ -169,14 +183,24 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
                         style={isTextOnlyPost ? {
                             background: data.background_color_code,
                             color: data.text_color_code || 'black',
-                            padding: '80px 20px',
-                            fontWeight: 'bolder',
-                            textAlign: 'center',
-                            fontSize: '15px'
+                            // padding: '80px 20px',
+                            // fontWeight: 'bolder',
+                            textAlign: data.text_align || 'center',
+                            fontSize: `${data.font_size || 15}px`,
+                            fontFamily: data.font_family || 'Arial',
+
                         } : { padding: '10px' }}
                     >
-                        {data.text}
-                        {/* <TextFormatter text={data.text} /> */}
+                        <div style={
+                            isTextOnlyPost && {
+                                display: 'flex',
+                                alignItems: data.vertical_align || 'middle',
+                                justifyContent: 'center',
+                                minHeight: '300px',
+                                alignItems: 'center'
+                            }}>
+                            {data.text}
+                        </div>
                     </div>
                 </div>
             )}
@@ -185,21 +209,7 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
             {data.photos?.length > 0 && (
                 <div className="mt position-relative" style={{ background: '#edf2fe75' }}>
                     {data.photos.length > 1 && (
-                        <div
-                            className="image-counter-overlay"
-                            style={{
-                                position: 'absolute',
-                                top: '10px',
-                                right: '10px',
-                                backgroundColor: '#8000FF',
-                                color: 'white',
-                                padding: '4px 10px',
-                                borderRadius: '20px',
-                                fontSize: '14px',
-                                fontWeight: 'bold',
-                                zIndex: 5
-                            }}
-                        >
+                        <div className="image-counter-overlay">
                             {currentImageIndex + 1}/{data.photos.length}
                         </div>
                     )}
@@ -209,17 +219,14 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
                             activeIndex={currentImageIndex}
                             onSelect={onImageClick}
                             interval={null}
-                            indicators={false} // we manually add them below
+                            indicators={false}
                             controls
                             className="zagasm-carousel"
                             wrap={false}
                         >
                             {data.photos.map((photo, index) => (
                                 <Carousel.Item key={index}>
-                                    <div
-                                        className="carousel-image-container"
-                                        style={{ cursor: 'pointer' }}
-                                    >
+                                    <div className="carousel-image-container" onClick={() => openGallery(index)}>
                                         {imageLoadError[index] ? (
                                             <div className="image-error-placeholder">
                                                 <i className="feather-image text-muted"></i>
@@ -233,7 +240,7 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
                                                     </div>
                                                 )}
                                                 <img
-                                                    src={'https://zagasm.com/content/uploads/' + photo.source}
+                                                    src={photo.source}
                                                     className={`carousel-image ${imageLoading ? 'd-none' : ''}`}
                                                     alt="Post content"
                                                     onError={() => handleImageError(index)}
@@ -244,11 +251,7 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
                                     </div>
                                 </Carousel.Item>
                             ))}
-
-                            {/* 👇 Carousel Indicators added here */}
-
                         </Carousel>
-
                     ) : (
                         <div onClick={() => openGallery(0)} style={{ cursor: 'pointer' }}>
                             {imageLoadError[0] ? (
@@ -264,7 +267,7 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
                                         </div>
                                     )}
                                     <img
-                                        src={'https://zagasm.com/content/uploads/' + data.photos[0].source}
+                                        src={data.photos[0].source}
                                         className={`img-fluid w-100 ${imageLoading ? 'd-none' : ''}`}
                                         alt="Post content"
                                         style={{ maxHeight: '500px', objectFit: 'cover', borderRadius: '0px', aspectRatio: '1/1' }}
@@ -275,12 +278,9 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
                             )}
                         </div>
                     )}
-
                 </div>
-
             )}
 
-            {/* OPEN IMAGE GALLERY MODAL */}
             {showGallery && (
                 <ImageGallery
                     images={data.photos}
@@ -294,53 +294,42 @@ export function PostContent({ data, currentImageIndex, onImageClick, profileData
 }
 export function PostFooter({ data, hideCommentButton = false }) {
     const { user } = useAuth();
-
-    const [showModal, setShowModal] = useState(false); // for comments
-    const [showGallery, setShowGallery] = useState(false); // ✅ for image viewer
+    const [showModal, setShowModal] = useState(false);
+    const [showGallery, setShowGallery] = useState(false);
     const [galleryStartIndex, setGalleryStartIndex] = useState(0);
-
     const handleCommentClick = (e) => {
         e.preventDefault();
         setShowModal(true);
     };
-
     return (
-        <footer className="pb-3 pt-0 pr-3 pl-3 osahan-post-footer border-bottom pt-2" style={{ background: '#edf2fe75' }} >
-            <div className="p-0 d-flex justify-content-between text-center w-100" >
-
-
-                <button
-                    className="text-secondary border-0 bg-transparent post_icon"
-                    aria-label={`Views (${data.views || 0})`}
-                >
+        <footer className="pb-3 pt-0 pr-3 pl-3 osahan-post-footer border-bottom pt-2" style={{ background: '#edf2fe75' }}>
+            <div className="p-0 d-flex justify-content-between text-center w-100">
+                <button className="text-secondary border-0 bg-transparent post_icon">
                     <img src={post_chart} alt="" />
                     <span className="ms-1">{data.views}</span>
                 </button>
 
                 <ShareButton
                     sharesCount={data.shares || 0}
-                    postUrl={`https://zagasmdemo.netlify.app/posts/${data.post_id}`}
-                    postTitle="Check out this amazing content!"
+                    postUrl={`/posts/${data.post_id}`}
+                    postTitle={data.text?.substring(0, 50) || "Check this out!"}
                 />
 
                 {!hideCommentButton && (
                     <button className="text-secondary border-0 bg-transparent post_icon" onClick={handleCommentClick}>
                         <img src={Message_square} alt="" />
-
-                        <span className='' style={{ marginLeft: '1px' }}> {data.comments || 0}</span>
+                        <span className='' style={{ marginLeft: '1px' }}>{data.comments || 0}</span>
                     </button>
                 )}
+
                 <ReactionButton
-                    initialCount={data.reaction_haha_count}
+                    initialCount={data.like_count}
                     emoji="😂"
-                    postId={data.post_id}
-                    i_react={data.i_react}
-                    userId={user.user_id}
-                    reactionType="haha"
+                    postId={data.id}
+                    userId={user?.user?.id}
+                    i_react={data.is_liked}
                 />
             </div>
-
-            {/* Comment Modal */}
             {!hideCommentButton && showModal && (
                 <PostViewModal
                     post={data}
@@ -349,7 +338,6 @@ export function PostFooter({ data, hideCommentButton = false }) {
                 />
             )}
 
-            {/* ✅ Image Gallery Modal */}
             {showGallery && data.photos?.length > 0 && (
                 <ImageGallery
                     images={data.photos}
@@ -366,4 +354,5 @@ export function PostFooter({ data, hideCommentButton = false }) {
         </footer>
     );
 }
+
 export default SinglePostTemplate;

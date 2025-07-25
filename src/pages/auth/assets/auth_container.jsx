@@ -4,16 +4,16 @@ import './style.css';
 import { motion } from "framer-motion";
 import { Link } from 'react-router-dom';
 
-function AuthContainer({ title, description, children }) {
+function AuthContainer({ modal, title, description, children }) {
     return (
         <Fragment>
-            <div className="auth-background" >
+            <div className={modal ?'':"auth-background"} >
                 {/* Main Content */}
                 <div className="container-fluid position-relative auth_container">
-                   <div className="row justify-content-center align-items-center d-flex align-center mb-5 inner_form_con">
-                        <div className="col-xl-3 col-lg-7 col-md-6  col form_container ">
+                   <div style={modal&&{height:'200px'}} className={modal?'d-flex align-center mt-5':"row justify-content-center align-items-center d-flex align-center mb-5 inner_form_con"}>
+                        <div className={modal ? ``:`col-xl-3 col-lg-7 col-md-6  col form_container `}>
                             <div className="">
-                                <div className="text-center  pr-4 pl-4">
+                                <div className="text-center ">
                                     <p style={{ display: 'flex', justifyContent: 'center', marginBottom: '60px' }}>
                                         <a href="#">
                                             <img src={zagasmLogo} alt="Zagasm Logo" style={{ width: '50px', height: '50px', }} />

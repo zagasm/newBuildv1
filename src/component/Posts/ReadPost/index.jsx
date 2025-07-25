@@ -14,9 +14,9 @@ function Post() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (postId) {
-            fetchPostById(postId);
-        }
+        // if (postId) {
+        //     fetchPostById(postId);
+        // }
         
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         handleResize();
