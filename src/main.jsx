@@ -11,14 +11,17 @@ import { PostProvider } from "./component/Posts/PostContext/index.jsx";
 import { HelmetProvider } from "react-helmet-async";
 import { ProfileProvider } from "./pages/Profile/profileContext/index.jsx";
 import { ModalProvider } from "./component/assets/ModalContext/index.jsx";
+import SearchPostProvider from "./component/Posts/PostContext/seachPost.jsx";
 
 const RootWrapper = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   return (
-    <PostProvider user={user}>
-      <ProfileProvider user={user}>
-        <App  />
-      </ProfileProvider>
+    <PostProvider user={user} token={token}>
+      <SearchPostProvider user={user} token={token}>
+        <ProfileProvider user={user} token={token}>
+          <App />
+        </ProfileProvider>
+      </SearchPostProvider>
     </PostProvider>
   );
 };

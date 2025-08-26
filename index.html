@@ -3,49 +3,85 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="./src/assets/ZAGASM_LOGO_ICON_V2_350PX.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zagasm</title>
-
+  
+  <!-- Primary Meta Tags -->
+  <title>Zagasm - The Funniest Meme Sharing Social Network</title>
+  <meta name="description" content="Share, discover and laugh with the best memes on Zagasm. Join our community of meme creators and enjoy daily humor content.">
+  <meta name="keywords" content="memes, funny memes, meme sharing, social media for memes, viral memes, humor content">
+  
+  <!-- Open Graph / Facebook Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://zagasm.com/">
+  <meta property="og:title" content="Zagasm - The Funniest Meme Sharing Social Network">
+  <meta property="og:description" content="Share, discover and laugh with the best memes on Zagasm. Join our community of meme creators and enjoy daily humor content.">
+  <meta property="og:image" content="https://zagasm.com/src/assets/ZAGASM_LOGO_ICON_V2_350PX.png">
+  
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://zagasm.com/">
+  <meta name="twitter:title" content="Zagasm - The Funniest Meme Sharing Social Network">
+  <meta name="twitter:description" content="Share, discover and laugh with the best memes on Zagasm. Join our community of meme creators and enjoy daily humor content.">
+  <meta name="twitter:image" content="https://zagasm.com/src/assets/ZAGASM_LOGO_ICON_V2_350PX.png">
+  
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="./src/assets/ZAGASM_LOGO_ICON_V2_350PX.png" />
   <link rel="icon" href="./src/assets/ZAGASM_LOGO_ICON_V2_350PX.png" type="image/png" sizes="16x16" />
-
-  <!-- <link rel="stylesheet" type="text/css" href="./src/assets/vendor/slick/slick.min.css" />
-  <link rel="stylesheet" type="text/css" href="./src/assets/vendor/slick/slick-theme.min.css" /> -->
+  <link rel="apple-touch-icon" href="./src/assets/ZAGASM_LOGO_ICON_V2_350PX.png">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://zagasm.com/" />
+  
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  
+  <!-- CSS Resources -->
   <link href="./src/assets/vendor/icons/feather.css" rel="stylesheet" type="text/css">
   <link href="./src/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="./src/assets/css/style.css" rel="stylesheet">
-
   
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/brands.min.css"
     integrity="sha512-58P9Hy7II0YeXLv+iFiLCv1rtLW47xmiRpC1oFafeKNShp8V5bKV/ciVtYqbk2YfxXQMt58DjNfkXFOn62xE+g=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <!-- Latest Free Font Awesome CDN -->
-
+  
+  <!-- Structured Data for Rich Snippets -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Zagasm",
+      "url": "https://zagasm.com",
+      "description": "A social media platform for sharing and discovering the funniest memes on the internet.",
+      "applicationCategory": "SocialNetwork",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
+  
   <style>
-   div a {
+    div a {
       color: #8000FF
     }
-    html{
-      outline:none
+    html {
+      outline: none
     }
   </style>
 </head>
 
-<body style="background:#ffffff ;">
-<!-- <body style="background:#edf2fe75 ;"> -->
-  <!-- <body> -->
-
+<body style="background:#ffffff;">
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
-
-
-
 </body>
-
 </html>

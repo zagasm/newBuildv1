@@ -1,3 +1,8 @@
+.profile_page_section_view {
+    max-width: 80%;
+    margin: auto;
+}
+
 .actions_section {
     display: flex;
     justify-content: space-around;
@@ -26,7 +31,7 @@
         display: flex;
         gap: 3px;
         font-size: 17px;
-    font-weight: 300;
+        font-weight: 300;
 
     }
 
@@ -85,10 +90,12 @@
 
 .user-avatar-container {
     width: 100%;
-    aspect-ratio: 1/1; /* Maintain square shape */
+    aspect-ratio: 1/1;
+    /* Maintain square shape */
     overflow: hidden;
     margin-bottom: 8px;
-    border-radius: 8px; /* Slightly rounded corners */
+    border-radius: 8px;
+    /* Slightly rounded corners */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -104,18 +111,19 @@
 }
 
 .username {
-    font-size: 14px;
+    font-size: 16px;
     color: #333;
     word-break: break-word;
-    font-weight: 500;
-    text-align: left;
+    font-weight: 700;
+    text-align: center;
+    text-transform: capitalize;
 }
 
 /* See More Button */
 .see-more-container {
     text-align: center;
     margin-top: 20px;
-   
+
 }
 
 .see-more-btn {
@@ -128,7 +136,7 @@
     font-size: 14px;
     font-weight: 500;
     transition: all 0.3s ease;
-     width: 100%;
+    width: 100%;
 }
 
 .see-more-btn:hover {
@@ -143,19 +151,49 @@
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 15px;
     }
+     .profile_page_section_view {
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
     .users-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .tab {
         padding: 10px 15px;
         font-size: 14px;
     }
-    
+
     .user-avatar-container {
         border-radius: 6px;
+    }
+}
+
+/* loader.css */
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 1568px) {
+    .profile_page_section_view {
+        max-width: 95%;
     }
 }

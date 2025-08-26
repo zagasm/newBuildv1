@@ -92,25 +92,31 @@ const PostDownloadButton = ({ data }) => {
                     <i className="fas fa-bookmark me-3" style={{ width: '20px', color: '#8000FF' }}></i>
                     <span>Save Post</span>
                 </button> */}
-            <Button
-                // variant="link"
-                // type="button"
-                className="w-100 text-left d-flex align-items-center py-3 px-4"
-                style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '16px',
-                    color: 'black',
-                    outline: '0px'
-                }}
-                onClick={handleClick}
-                title="Download or View"
-            >
-                <i style={{ fontSize: '20px' }} className="feather-download me-3"></i>
+            {!hasImages &&
 
-                {hasImages ? <span className='ml-2'>Download image</span> : hasText && <span className='ml-2'>Download text as image</span> }
-                {/* {hasText && <span className='ml-2'>Download text as image</span>} */}
-            </Button>
+                <li className='w-100 text-left d-flex align-items-center py-3 mt-3' style={{ margin: '-10px' }}>
+                    <Button
+                        // variant="link"
+                        // type="button"
+                        className=""
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            fontSize: '16px',
+                            color: 'black',
+                            outline: '0px',
+                            margin: 'none'
+                        }}
+                        onClick={handleClick}
+                        title="Download or View"
+                    >
+                        <i style={{ fontSize: '20px' }} className="feather-download me-3"></i>
+
+                        {<span className='ml-2'>Download text as image</span>}
+                        {/* {hasText && <span className='ml-2'>Download text as image</span>} */}
+                    </Button>
+                </li>
+            }
 
             <Modal
                 show={showGallery}

@@ -1,0 +1,13 @@
+.linkedaccount_card {
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+.linkedaccount_card:hover {
+    box-shadow: none;
+}
+
+.linkedaccount_card button {
+    background-color: rgba(238, 218, 251, 1);
+
+}

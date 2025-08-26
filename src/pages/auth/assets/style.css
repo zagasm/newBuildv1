@@ -116,7 +116,7 @@ form .code_container .code {
   /* position: fixed;
   bottom:0px; */
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
   /* padding: 10px 10px; */
 }
@@ -132,10 +132,11 @@ form .code_container .code {
 
 .auth_container .container_heading_text {
   /* color: #8000FF; */
-  font-size: 20px;
+  font-size: 15px;
   font-family: 'Inter';
   text-align: left;
-  margin: 20px 0px;
+  /* margin: 20px 0px; */
+
 }
 
 #privacyAgree {

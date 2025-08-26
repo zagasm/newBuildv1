@@ -7,18 +7,21 @@ import PostContentLoader from '../../assets/Loader/postContentSection';
 import FullScreenPreloader from './FullScreenPreloader';
 import CommentContainer from '../comment/commentContainer';
 import PostDownloadButton from '../DownloadAttachment';
-import '../ReadPost/postViewStyle.css';
+import './PostSettingsModalStyling.css';
 import { useAuth } from '../../../pages/auth/AuthContext';
+import FollowButton from './followButton';
+import { encrypt } from '../../encryption/cryptoUtil';
+import SavePostButton from './savePostButton';
+import ReportPost from './ReportPost';
 
 function PostSettingsModal({ post, show, onHide }) {
     const [isMobile, setIsMobile] = useState(false);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [isTextOnlyPost, setIsTextOnlyPost] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [showToast, setShowToast] = useState(false); // Added for toast notification
     const { user } = useAuth();
-
+    //    console.log();
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
         handleResize();
@@ -43,8 +46,9 @@ function PostSettingsModal({ post, show, onHide }) {
     // New function to copy post link
     const copyPostLink = () => {
         if (!post) return;
+        const encryptedId = `${import.meta.env.VITE_BASE_APP_URL}/meme/${post.id}`;
 
-        const postUrl = `${window.location.origin}/posts/${post.post_id}`;
+        const postUrl = `${encryptedId}`;
         navigator.clipboard.writeText(postUrl)
             .then(() => {
                 setShowToast(true);
@@ -67,7 +71,14 @@ function PostSettingsModal({ post, show, onHide }) {
                 document.body.removeChild(textArea);
             });
     };
-
+    // const handleNavigate = (id) => {
+    //     const encryptedId = encrypt(id);
+    //     navigate(`/${encodeURIComponent(encryptedId)}`);
+    // };
+    const truncateText = (text, maxLength = 20) => {
+        if (!text) return "";
+        return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    };
     if (!post) return null;
 
     return (
@@ -108,20 +119,19 @@ function PostSettingsModal({ post, show, onHide }) {
                 onHide={handleClose}
                 size="xl"
                 centered
-                className={`fullscreen-post-modal ${isClosing ? 'closing' : ''}`}
-                backdropClassName="modal-backdrop"
+                className={`fullscreen-post-settings-modal ${isClosing ? 'closing' : ''}`}
+                backdropClassName="modal-post-settings-backdrop"
                 dialogClassName="m-0 p-0"
                 animation={false}
-                backdrop="static"
+            // backdrop="static"
             >
-                <div className=" d-flex justify-content-center bg-dange mt-2 w-100">
+                <div className=" d-flex justify-content-center ">
                     <button
-                        className="modal-close-btn "
+                        className="modal-close-bt "
                         onClick={handleClose}
                         aria-label="Close"
+                        style={{ background: 'rgba(217, 217, 217, 1)', width: '100px', border: 'none', padding: '2px 0px', borderRadius: 'none' }}
                     >
-                        <span className='fa fa-close'></span>
-                        {/* <span className='fa fa-angle-left'></span> */}
                     </button>
                 </div>
                 <Modal.Body style={{ padding: '0px', margin: '0px' }}>
@@ -137,34 +147,21 @@ function PostSettingsModal({ post, show, onHide }) {
                                     />
                                 </div>
                                 <div className="font-weight-bold" style={{ flex: '1' }}>
-                                    <div className='text-truncate'>{post.user_name}</div>
+                                    <div className='text-truncate text-capitalize'>{truncateText(post.user_name, 10)}</div>
                                 </div>
-                                <button type="button" style={{ background: '#EEDAFB' }} className="btn btn-sm">
-                                    <span>Follow</span> <i className="feather-user-plus ml-2"></i>
-                                </button>
+                                <FollowButton userId={post.user_id} following={post.user.is_following} />
                             </div>}
 
-                            <ul className="list-unstyled">
-                                <li>
+                            <ul className="list-unstyled mt-2">
+                                
                                     <PostDownloadButton data={post} />
+                               
+                                <li>
+                                    <SavePostButton memeId={post.id} />
                                 </li>
                                 <li>
                                     <button
-                                        className="w-100 text-left d-flex align-items-center py-3 px-4"
-                                        type="button"
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            fontSize: '14px'
-                                        }}
-                                    >
-                                        <i className="far fa-bookmark mr-3" style={{ width: '24px', fontSize: '20px' }}></i>
-                                        <span>Save Post</span>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        className="w-100 text-left d-flex align-items-center py-3 px-4"
+                                        className="w-100 text-left d-flex align-items-center py-3 "
                                         type="button"
                                         onClick={copyPostLink} // Added click handler
                                         style={{
@@ -177,9 +174,9 @@ function PostSettingsModal({ post, show, onHide }) {
                                         <span>Copy Link</span>
                                     </button>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <button
-                                        className="w-100 text-left d-flex align-items-center py-3 px-4"
+                                        className="w-100 text-left d-flex align-items-center py-3 "
                                         type="button"
                                         style={{
                                             background: 'none',
@@ -190,21 +187,11 @@ function PostSettingsModal({ post, show, onHide }) {
                                         <i className="far fa-eye-slash mr-3" style={{ width: '24px', fontSize: '20px' }}></i>
                                         <span>Hide</span>
                                     </button>
-                                </li>
+                                </li> */}
                                 <li>
-                                    <button
-                                        className="w-100 text-left d-flex align-items-center py-3 px-4"
-                                        type="button"
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            fontSize: '14px',
-                                            color: '#ed4956'
-                                        }}
-                                    >
-                                        <i className="far fa-flag mr-3" style={{ width: '24px', fontSize: '20px' }}></i>
-                                        <span>Report</span>
-                                    </button>
+                                    <ReportPost
+                                        memeId={post.id}
+                                    />
                                 </li>
                             </ul>
                         </div>

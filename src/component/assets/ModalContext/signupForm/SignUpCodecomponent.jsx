@@ -6,7 +6,7 @@ import axios from "axios";
 import { useAuth } from "../../../../pages/auth/AuthContext";
 import Alert from 'react-bootstrap/Alert';
 
-const SignUpCodecomponent = ({ token, userupdate, type }) => {
+const SignUpCodecomponent = ({ userupdate, type }) => {
     const inputRefs = useRef([]);
     const [code, setCode] = useState(["", "", "", "", ""]);
     const [switchToForm, setSwitchToForm] = useState(false);
@@ -15,7 +15,7 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
     const [successMessage, setSuccessMessage] = useState(null);
     const [timer, setTimer] = useState(10); // 10 minutes in seconds
     const [canResend, setCanResend] = useState(false);
-    const { login } = useAuth();
+    const { login, token } = useAuth();
 
     useEffect(() => {
         // Start countdown timer
@@ -149,8 +149,8 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
 
     const isComplete = code.every((digit) => digit !== "");
 
-    const user = userupdate;
     function skipProcess() {
+        const user = userupdate;
         login({ token, user });
     }
 
@@ -158,7 +158,7 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
         const altType = type === "email" || type === "email_verification" ? "phone" : "email";
         return (
             <PhoneEmailPostSignup
-                token={token}
+               
                 userupdate={userupdate}
                 type={altType}
             />
@@ -247,7 +247,7 @@ const SignUpCodecomponent = ({ token, userupdate, type }) => {
                         }}
                     >
                         {isLoading ? (
-                            <div className="loader">
+                            <div className="loader m-0 m-auto p-0">
                                 <div className="loader-spinner"></div>
                             </div>
                         ) : (

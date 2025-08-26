@@ -1,7 +1,7 @@
 import React from 'react';
 import './loader.css'; // Style needed for animation
 
-function SinglePostLoader() {
+function    SinglePostLoader() {
     return (
         <div className="box shadow-sm border rounded bg-white mb-3 osahan-post car">
             {/* Header Loader */}

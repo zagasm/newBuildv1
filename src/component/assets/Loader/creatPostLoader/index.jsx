@@ -4,7 +4,7 @@ import './PostShimmerLoader.css'; // CSS styles required
 const PostShimmerLoader = ({ tab = 'text' }) => {
     return (
 
-        <div className="col col-xl-8 order-xl-2 col-lg-8 order-lg-1 col-md-12 col-sm-12 col-12 main_container" >
+        <div className="col col-xl-11 order-xl-2 col-lg-8 order-lg-1 col-md-12 col-sm-12 col-12 main_container" >
             <div className="post-shimmer-container container card " style={{ padding: '20px', height: '50vh' }}>
 
                 {/* Show Text Tab Shimmer */}

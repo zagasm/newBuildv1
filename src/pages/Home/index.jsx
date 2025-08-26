@@ -13,8 +13,8 @@ import { useAuth } from '../auth/AuthContext';
 function Home() {
     const { HomePostData } = usePost();
     const [activeTab, setActiveTab] = useState('foryou');
-    const { isAuthenticated } = useAuth();
-
+    const { isAuthenticated,user } = useAuth();
+    //   console.log(user);
     const handleTabChange = (tab) => {
         if (tab === 'foryou' && !isAuthenticated) {
             // Optional: redirect to login or show toast
@@ -22,7 +22,6 @@ function Home() {
         }
         setActiveTab(tab);
     };
-
     useEffect(() => {
         // If the user is not authenticated but the active tab is 'foryou',
         // fall back to 'following'
@@ -60,9 +59,9 @@ function Home() {
 
                         <div className="posts-container">
                             {activeTab === 'foryou' ? (
-                                <ForYouPost posts={HomePostData} />
+                                <ForYouPost  />
                             ) : (
-                                <FollowingPost posts={HomePostData} />
+                                <FollowingPost  />
                             )}
                         </div>
                     </main>

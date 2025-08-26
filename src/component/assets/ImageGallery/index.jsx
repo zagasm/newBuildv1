@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import './ImageGallery.css';
+import axios from "axios"; // make sure you have this at the top
 
 const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
   const [loading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [showControls, setShowControls] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
   const imageRef = useRef(null);
   const containerRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
@@ -19,37 +21,61 @@ const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
 
   const [currentImage, setCurrentImage] = useState(images[currentIndex]);
 
+  // Preload image when index changes
   useEffect(() => {
-    setCurrentImage(images[currentIndex]);
-    setScale(1);
-    setPosition({ x: 0, y: 0 });
     setLoading(true);
     setError(false);
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+
+    const img = new Image();
+    img.src = images[currentIndex].source;
+    img.onload = () => {
+      setCurrentImage(images[currentIndex]);
+      setLoading(false);
+      setError(false);
+      resetControlsTimeout();
+    };
+    img.onerror = () => {
+      // Retry once with cache-busting
+      const retryImg = new Image();
+      retryImg.src =
+        images[currentIndex].source +
+        (images[currentIndex].source.includes('?') ? '&' : '?') +
+        'cacheBust=' + Date.now();
+      retryImg.onload = () => {
+        setCurrentImage(images[currentIndex]);
+        setLoading(false);
+        setError(false);
+        resetControlsTimeout();
+      };
+      retryImg.onerror = () => {
+        setLoading(false);
+        setError(true);
+      };
+    };
   }, [currentIndex, images]);
 
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft' && currentIndex > 0) onNavigate(-1);
       if (e.key === 'ArrowRight' && currentIndex < images.length - 1) onNavigate(1);
-      if (e.key === '+') handleZoomIn();
-      if (e.key === '-') handleZoomOut();
+      if (e.key === '+' && scale < 7) handleZoomIn();
+      if (e.key === '-' && scale > 1) handleZoomOut();
       if (e.key === '0') handleResetZoom();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, images.length, onClose, onNavigate]);
+  }, [currentIndex, images.length, onClose, onNavigate, scale]);
 
   const resetControlsTimeout = () => {
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDragging && scale > 1) {
-      setIsDragging(true);
-      setStartPos({ x: e.clientX - position.x, y: e.clientY - position.y });
-    }
+  const handleMouseMove = () => {
     setShowControls(true);
     resetControlsTimeout();
   };
@@ -66,7 +92,7 @@ const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
     const containerRect = containerRef.current.getBoundingClientRect();
     const imageRect = imageRef.current.getBoundingClientRect();
     const maxX = (imageRect.width * scale - containerRect.width) / 2;
-    const maxY = (imageRect.height * scale - containerRect.height) / 2;
+    const maxY = (imageRect.height * scale - containerRect.height) / 1;
     let newX = e.clientX - startPos.x;
     let newY = e.clientY - startPos.y;
     newX = Math.min(Math.max(newX, -maxX), maxX);
@@ -83,14 +109,84 @@ const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
     setPosition({ x: 0, y: 0 });
   };
 
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = `https://zagasm.com/content/uploads/${currentImage.source}`;
-    link.download = `image-${currentIndex + 1}.jpg`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+
+const handleDownload = async () => {
+  if (isDownloading) return;
+  setIsDownloading(true);
+
+  const imageUrl = currentImage.source;
+  console.log("Attempting to download:", imageUrl);
+
+  try {
+    let blob;
+    let filename = `downloaded_image.png`; // A sensible default
+
+    // Extract a better filename from the URL if possible
+    try {
+      const url = new URL(imageUrl);
+      const pathnameParts = url.pathname.split('/').filter(p => p);
+      if (pathnameParts.length > 0) {
+        filename = pathnameParts[pathnameParts.length - 1];
+      }
+    } catch (e) {
+      console.log("Could not parse URL for filename, using default.");
+    }
+
+    if (imageUrl.startsWith("data:")) {
+      // Handle Base64 data URLs directly
+      console.log("Processing as a data URL.");
+      const response = await fetch(imageUrl);
+      blob = await response.blob();
+    } else {
+      // Handle all remote URLs via the server-side proxy
+      console.log("Processing as a remote URL via proxy.");
+      const proxyUrl = `/api/download-image?url=${encodeURIComponent(imageUrl)}`;
+      
+      const response = await fetch(proxyUrl);
+      
+      if (!response.ok) {
+        // If the proxy fails, provide a clear error message
+        throw new Error(`Proxy request failed with status: ${response.status} ${response.statusText}`);
+      }
+      
+      blob = await response.blob();
+    }
+
+    // Use the File System Access API if available for a better user experience
+    if (window.showSaveFilePicker) {
+      console.log("Using File System Access API.");
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{
+          description: 'Images',
+          accept: { 'image/png': ['.png'], 'image/jpeg': ['.jpeg', '.jpg'] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+    } else {
+      // Fallback to the traditional link-click method
+      console.log("Using fallback download method.");
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    }
+
+  } catch (err) {
+    console.error("Download failed:", err);
+    // As a final fallback, open the original image URL in a new tab
+    window.open(imageUrl, '_blank', 'noopener,noreferrer');
+  } finally {
+    setIsDownloading(false);
+  }
+};
+
 
   return createPortal(
     <div className="image-gallery-overlay" onMouseMove={handleMouseMove}>
@@ -111,11 +207,14 @@ const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
           <button onClick={handleResetZoom}><i className="feather-refresh-ccw"></i></button>
         </div>
         <div className="info-controls">
-          <span className="image-counter">
-            {currentIndex + 1} / {images.length}
-          </span>
-          <button onClick={handleDownload}>
-            <i className="feather-download"></i>
+          <span className="image-counter">{currentIndex + 1} / {images.length}</span>
+          <button
+            onClick={handleDownload}
+            disabled={isDownloading}
+            className={isDownloading ? 'downloading' : ''}
+            title={isDownloading ? 'Downloading...' : 'Download image'}
+          >
+            <i className={isDownloading ? "feather-loader" : "feather-download"}></i>
           </button>
         </div>
       </div>
@@ -137,26 +236,19 @@ const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
               <p>Image failed to load</p>
             </div>
           )}
-          <img
-            ref={imageRef}
-            src={`https://zagasm.com/content/uploads/${currentImage.source}`}
-            alt={`Gallery image ${currentIndex + 1}`}
-            className={`gallery-image ${loading || error ? 'hidden' : ''}`}
-            style={{
-              transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-              cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in'
-            }}
-            onLoad={() => {
-              setLoading(false);
-              setError(false);
-              resetControlsTimeout();
-            }}
-            onError={() => {
-              setLoading(false);
-              setError(true);
-            }}
-            onClick={() => scale === 1 && handleZoomIn()}
-          />
+          {!loading && !error && (
+            <img
+              ref={imageRef}
+              src={currentImage.source}
+              alt={`Gallery image ${currentIndex + 1}`}
+              className="gallery-image"
+              style={{
+                transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
+                cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in'
+              }}
+              onClick={() => scale === 1 && handleZoomIn()}
+            />
+          )}
         </div>
 
         {/* Navigation Arrows */}
@@ -190,7 +282,8 @@ const ImageGallery = ({ images, currentIndex, onClose, onNavigate }) => {
                   <div className="thumb-error"><i className="feather-image"></i></div>
                 ) : (
                   <img
-                    src={`https://zagasm.com/content/uploads/${img.source}`}
+                    src={img.source}
+                    loading="lazy"
                     className={`thumbnail ${index === currentIndex ? 'active' : ''}`}
                     onClick={() => onNavigate(index - currentIndex)}
                     alt={`Thumbnail ${index + 1}`}

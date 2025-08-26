@@ -34,17 +34,42 @@ import PostSignupForm from "./component/assets/ModalContext/signupForm/PostSignU
 import { useAuth } from "./pages/auth/AuthContext/index.jsx";
 import AuthModal from "./pages/auth/AuthModal/index.jsx";
 import ProfilePage from "./pages/Profile/index.jsx";
-
+import RefreshModal from "./pages/pageAssets/RefreshModal/index.jsx";
+import ViewPost from "./pages/Home/viewPost.jsx";
+import Account from "./pages/Account/index.jsx";
+import AccountOutlet from "./pages/Account/AccountOutlet.jsx";
+import Accountfollowers from "./pages/Account/followers-following/followers.jsx";
+import Accountfollowing from "./pages/Account/followers-following/following.jsx";
+import AccountSettings from "./pages/Account/settings/index.jsx";
+import SettingEditProfile from "./pages/Account/settings/editProfile/index.jsx";
+import SettingChangePassword from "./pages/Account/settings/editProfile/changePassword.jsx";
+import SettingLinkedAccount from "./pages/Account/settings/LinkAccounts/index.jsx";
+import MemePreference from "./pages/Account/settings/MemePreference/index.jsx";
+import WhoCanMessage from "./pages/Account/settings/WhoCanMessage/index.jsx";
+import TwoFactorAuth from "./pages/Account/settings/twoFactorAuth/index.jsx";
+import Savepost from "./pages/SavePost/index.jsx";
+import CommunityGuideline from "./pages/Account/settings/CommunityGuideline/index.jsx";
+import DeleteAccount from "./pages/Account/DeleteAccount/index.jsx";
+import PostCommentButton from "./component/Posts/PostCommentsModal/index.jsx";
+import Marketing from "./pages/auth/Marketing/index.jsx";
+import Support from "./pages/auth/Support/index.jsx";
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, showAuthModal } = useAuth();
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!isAuthenticated) {
-      showAuthModal('login');
+      // navigate('/');
+      // showAuthModal('login');
+     
+      
+
     }
-  }, [isAuthenticated, showAuthModal]);
+  }, []);
 
   if (!isAuthenticated) {
+      // navigate('/page-not-found');
+
     return null; // Don't render protected content
   }
 
@@ -53,6 +78,7 @@ const ProtectedRoute = ({ children }) => {
 
 const MainLayout = () => (
   <>
+    <RefreshModal />
     <PostSignupForm />
     <Navbar />
     <Outlet />
@@ -74,12 +100,14 @@ export function App() {
   return (
     <ModalProvider>
       <Fragment>
+
         {loading && <FullpagePreloader loading={loading} />}
         <ToastContainer />
         <NetworkStatus />
-        
+
         <AuthModal />
-        
+
+
         <Routes>
           {/* Public Auth Routes (still accessible directly if needed) */}
           <Route path="/auth" element={<AuthLayout />}>
@@ -105,14 +133,51 @@ export function App() {
               <Route path="/help" element={<Help />}>
                 <Route path="faqs" element={<Faqs />} />
               </Route>
-              <Route path=":profileId" element={<ProfileOutlet />}>
-                <Route index element={<ProfilePage />} />
+              <Route
+                path="account"
+                element={
+                 <ProtectedRoute>
+                    <AccountOutlet />
+                 </ProtectedRoute>
+                }
+              >
+                <Route exact index element={<Account />} />
+                
+                <Route path="followers" element={<Accountfollowers />} />
+                <Route path="following" element={<Accountfollowing />} />
+                <Route path="settings" element={<AccountSettings />} />
+                <Route path="change-user-profile" element={<SettingEditProfile />} />
+                <Route path="change-password" element={<SettingChangePassword />} />
+                <Route path="manage-linked-account" element={<SettingLinkedAccount />} />
+                <Route path="meme-feed-preference" element={<MemePreference />} />
+                <Route path="who-can-message" element={<WhoCanMessage />} />
+                <Route path="two-factor-authentication" element={<TwoFactorAuth />} />
+                <Route path="community-guideline" element={<CommunityGuideline />} />
+                <Route path="delete-account" element={<DeleteAccount />} />
+
               </Route>
 
+              <Route path="meme/:postId" element={
+                // <ProtectedRoute>
+                <ViewPost />
+                // </ProtectedRoute>
+              } >
+              </Route>
               {/* Protected Routes (show modal if unauthenticated) */}
+              <Route path="profile/:profileId" element={
+                <ProtectedRoute>
+                  <ProfileOutlet />
+                </ProtectedRoute>
+              }>
+              </Route>
               <Route path="notification" element={
                 <ProtectedRoute>
                   <Notifications />
+                </ProtectedRoute>
+              } />
+               <Route path="save-post" element={
+                <ProtectedRoute>
+                  <Savepost />
                 </ProtectedRoute>
               } />
               <Route path="chat" element={
@@ -140,6 +205,8 @@ export function App() {
 
           {/* Additional Public Routes */}
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/marketing" element={<Marketing />} />
+          <Route path="/support" element={<Support />} />
           <Route path="/page-not-found" element={<Error404 />} />
           <Route path="*" element={<Error404 />} />
         </Routes>
@@ -148,7 +215,7 @@ export function App() {
           <Routes>
             <Route
               element={
-                <PostViewModal
+                <PostCommentButton
                   show={true}
                   onHide={() => navigate(-1)}
                 />
@@ -157,6 +224,6 @@ export function App() {
           </Routes>
         )}
       </Fragment>
-    </ModalProvider>
+    </ModalProvider >
   );
 }

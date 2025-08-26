@@ -1,0 +1,52 @@
+/* ReactionStyle.css */
+.comment_reaction-container {
+    display:flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding:  3px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: -1px 1px 2px 0px #4040401A;
+    transition: background-color 0.3s ease;
+    font-size: 10px;
+    background: #F4E6FD;
+
+}
+.comment_reaction-count {
+   width: fit-content;
+   padding-right: 2px;
+   /* display: none; */
+}
+.comment_reaction-container.i_react {
+    background: #8F07E7;
+    color: white;
+    box-shadow: -1px 1px 2px 0px #8F07E733;
+}
+
+.emoji-and-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.emoji-wrapper {
+    display: inline-block;
+    transform-origin: bottom center;
+    line-height: 1; /* Remove extra spacing */
+}
+
+.emoji-wrapper.animate {
+    animation: bounce 0.8s cubic-bezier(0.28, 0.84, 0.42, 1);
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0) scale(1, 1); }
+    15% { transform: translateY(-15px) scale(1.1, 0.9); }
+    30% { transform: translateY(-25px) scale(0.9, 1.1); }
+    45% { transform: translateY(0) scale(1.05, 0.95); }
+    60% { transform: translateY(-8px) scale(1, 1); }
+    75% { transform: translateY(0) scale(1, 1); }
+    100% { transform: translateY(0) scale(1, 1); }
+}
+

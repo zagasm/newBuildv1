@@ -89,7 +89,8 @@ function SuggestedFriends() {
         <h6 className="m-0 text-dark">People you might know</h6>
       </div>
       <div className="box-body p-3">
-        {users.map((user, index) => (
+          <p className='text-center'>No suggestion yet</p>
+        {/* {users.map((user, index) => (
           <div className="d-flex align-items-center osahan-post-header mb-3 people-list" key={index}>
             <div className="dropdown-list-image mr-3 position-relative">
               <ImageWithLoader src={user.image} alt={user.name} fallbackSeed={user.fallbackSeed} />
@@ -105,7 +106,7 @@ function SuggestedFriends() {
               </button>
             </span>
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   );

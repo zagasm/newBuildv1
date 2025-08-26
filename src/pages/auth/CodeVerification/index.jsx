@@ -5,17 +5,18 @@ import { ChangePassword } from "../ChangePassword";
 import axios from "axios";
 import { showToast } from "../../../component/ToastAlert";
 
-export function CodeVerification({ userId, contact, isPhone = false, reset_code }) {
+export function CodeVerification({ userId, contact, isPhone,setShowCodeVerification }) {
   const CODE_LENGTH = 5;
   const [code, setCode] = useState(Array(CODE_LENGTH).fill(""));
-  const [resetCode, setResetCode] = useState(reset_code || 0);
   const [isVerified, setIsVerified] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [timer, setTimer] = useState(60*10); // 60 seconds = 1 minute
+  const [timer, setTimer] = useState(60 * 10); // 60 seconds = 1 minute
   const [canResend, setCanResend] = useState(false);
+  const [userIdPassword, setUserIdPassword] = useState('');
   const inputsRef = useRef([]);
 
   // Timer countdown effect
@@ -123,82 +124,85 @@ export function CodeVerification({ userId, contact, isPhone = false, reset_code 
     }
   };
 
- const verifyCode = async () => {
-  const joinedCode = code.join("");
-  if (joinedCode.length < CODE_LENGTH) {
-    setError(`Please enter the full ${CODE_LENGTH}-digit code.`);
-    return;
-  }
-
-  setIsVerifying(true);
-  setError("");
-
-  try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/v1/users/otp-verification/${userId}`,
-      {
-        otp: joinedCode,
-        type: "password_reset"
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        }
-      }
-    );
-
-    const data = response.data;
-    console.log(joinedCode);
-    // if (data.status === true) {
-    //   setSuccessMessage(data.message || "OTP verified successfully!");
-    //   setSuccess(true);
-    //   // Store user ID for password reset if needed
-    //   localStorage.setItem("password_reset_user_id", data.user_id);
-    //   setTimeout(() => setIsVerified(true), 1000);
-    // } else {
-    //   setError(data.message || "Incorrect verification code. Please try again.");
-    // }
-  } catch (err) {
-    if (err.response) {
-      const status = err.response.status;
-      const errorData = err.response.data;
-      
-      // Handle different error cases
-      if (status === 401) {
-        setError(errorData.message || "Invalid or expired verification code.");
-      } else if (status === 422) {
-        // Handle validation errors
-        if (errorData.errors?.otp) {
-          setError(errorData.errors.otp[0]);
-        } else {
-          setError(errorData.message || "Validation failed. Please check your input.");
-        }
-      } else {
-        setError(errorData.message || "An error occurred. Please try again.");
-      }
-    } else if (err.request) {
-      // The request was made but no response was received
-      setError("Network error. Please check your internet connection.");
-    } else {
-      // Something happened in setting up the request
-      setError("An unexpected error occurred.");
+  const verifyCode = async () => {
+    const joinedCode = code.join("");
+    if (joinedCode.length < CODE_LENGTH) {
+      setError(`Please enter the full ${CODE_LENGTH}-digit code.`);
+      return;
     }
-  } finally {
-    setIsVerifying(false);
-  }
-};
+    setError("");
+    // console.log(userId)
+    setIsVerifying(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/users/otp-verification/${userId}`,
+        {
+          otp: joinedCode,
+          type: "password_reset"
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+      );
+
+      const data = response.data;
+      console.log(data);
+      if (data.status === true) {
+        setSuccessMessage(data.message || "OTP verified successfully!");
+        setSuccess(true);
+        showToast.success(data.message || "OTP verified successfully!");
+        // Store user ID for password reset if needed
+        setUserIdPassword(data.user_id);
+        localStorage.setItem("password_reset_user_id", data.user_id);
+        setTimeout(() => setIsVerified(true), 1000);
+      } else {
+        setError(data.message || "Incorrect verification code. Please try again.");
+      }
+    } catch (err) {
+      console.log(err);
+      if (err.response) {
+        const status = err.response.status;
+        const errorData = err.response.data;
+
+        // Handle different error cases
+        if (status === 401) {
+          setError(errorData.message || "Invalid or expired verification code.");
+        } else if (status === 422) {
+          // Handle validation errors
+          if (errorData.errors?.otp) {
+            setError(errorData.errors.otp[0]);
+          } else {
+            setError(errorData.message || "Validation failed. Please check your input.");
+          }
+        } else {
+          setError(errorData.message || "An error occurred. Please try again.");
+        }
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError("Network error. Please check your internet connection.");
+      } else {
+        // Something happened in setting up the request
+        setError("An unexpected error occurred.");
+      }
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   return (
     <>
+    
       {!isVerified ? (
         <AuthContainer
           title="Verification code"
           description={`We sent a code to your ${isPhone ? 'phone' : 'email'}`}
+          backRedirect={setShowCodeVerification}
         >
           <p className="text-left ml-4" style={{ color: "#8000FF", fontSize: "15px", fontFamily: "Inter" }}>
             {maskContact(contact)}
           </p>
-
           <form autoComplete="off" className="pr-3 pl-3" onSubmit={(e) => e.preventDefault()}>
             <div className="code_container row m-4 justify-content-center">
               {code.map((digit, idx) => (
@@ -230,11 +234,11 @@ export function CodeVerification({ userId, contact, isPhone = false, reset_code 
               </div>
             )}
 
-            {success && (
+            {/* {success && (
               <div className="text-success text-center mb-3" style={{ fontSize: "14px" }}>
                 <i className="fa fa-check-circle mr-1"></i> Code verified successfully! Redirecting...
               </div>
-            )}
+            )} */}
 
             <div className="resend_code_container mb-3">
               <button
@@ -296,7 +300,7 @@ export function CodeVerification({ userId, contact, isPhone = false, reset_code 
           </form>
         </AuthContainer>
       ) : (
-        <ChangePassword contact={contact} isPhone={isPhone} resetcode={resetCode} />
+        <ChangePassword userIdPassword={userIdPassword} setIsVerified={setIsVerified} />
       )}
     </>
   );

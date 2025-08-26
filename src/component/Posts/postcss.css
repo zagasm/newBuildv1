@@ -227,11 +227,9 @@
   /* background-color: rgba(255, 255, 255, 0.5); */
   border: none;
 }
-
 .carousel-indicators .active {
   background-color: #0095f6;
 }
-
 .osahan-post-footer button {
   display: inline-block;
   padding: 0;
@@ -240,10 +238,6 @@
   color: inherit;
   cursor: pointer;
 }
-
-
-
-
 /* Optional styling for better visibility */
 .position-absolute .btn {
   /* background-color: rgba(0, 0, 0, 0.5); */
@@ -264,4 +258,16 @@
 
 .post_icon img {
   width: 22px;
+}
+
+.image-counter-overlay{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(141, 7, 231, 0.604);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  z-index: 99;
 }

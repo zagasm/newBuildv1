@@ -1,0 +1,136 @@
+/* Base Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromBottom {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Session Page Container */
+.session-page {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Heading Section */
+.session-page .heading_section {
+  animation: slideInFromBottom 0.6s ease-out 0.2s both;
+}
+
+.session-page .heading_section img {
+  width: 40px;
+  /* margin-bottom: 10px; */
+  transition: transform 0.3s ease;
+}
+
+.session-page .heading_section img:hover {
+  animation: pulse 1s ease infinite;
+}
+
+.session-page .heading_section span {
+  margin-top: 10px;
+  display: inline-block;
+  animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+.session-page .heading_section p {
+  font-size: 14px;
+  animation: fadeIn 0.8s ease-out 0.6s both;
+}
+
+/* User Session Buttons */
+.session-page .user_session_btn {
+  border: 1px solid rgba(208, 213, 221, 1);
+  border-radius: 20px;
+  padding: 5px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: slideInFromBottom 0.5s ease-out forwards;
+  animation-delay: calc(0.1s * var(--i)); /* Add this to your JSX */
+}
+
+.session-page .user_session_btn:hover {
+  background: rgba(143, 7, 231, 1);
+  color: white;
+  border: none;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(143, 7, 231, 0.3);
+}
+
+.session-page .user_session_btn.selected {
+  background: rgba(143, 7, 231, 1);
+  color: white;
+  border: none;
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(143, 7, 231, 0.4);
+}
+
+/* Buttons */
+.session-page .continue_button {
+  border: none;
+  background: rgba(143, 7, 231, 1);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.8s ease-out 0.8s both;
+}
+
+.session-page .continue_button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(143, 7, 231, 0.4);
+}
+
+.session-page .guest_btn {
+  border: 1px solid rgba(208, 213, 221, 1);
+  border-radius: 20px;
+  padding: 5px;
+  background: none;
+  color: grey;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.8s ease-out 1s both;
+}
+
+.session-page .guest_btn:hover {
+  background: rgba(208, 213, 221, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Form Elements */
+.session-page .form-group {
+  animation: fadeIn 0.8s ease-out 0.6s both;
+}
+
+.session-page input {
+  transition: all 0.3s ease;
+}
+
+.session-page input:focus {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 2px rgba(143, 7, 231, 0.2);
+}
+
+/* Remove Button */
+.session-page .user_session_btn span[role="button"] {
+  transition: all 0.3s ease;
+}
+
+.session-page .user_session_btn span[role="button"]:hover {
+  transform: rotate(90deg);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 767px) {
+  .session-page .heading_section p {
+    font-size: 12px;
+  }
+  
+  .session-page .user_session_btn {
+    animation-delay: calc(0.05s * var(--i)); /* Faster on mobile */
+  }
+}

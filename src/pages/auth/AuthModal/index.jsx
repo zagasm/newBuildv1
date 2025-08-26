@@ -1,48 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Tab, Tabs } from 'react-bootstrap';
 import { SignUp } from '../signup';
 import { Signin } from '../signin';
 import { useAuth } from '../AuthContext';
 import './AuthModal.css';
+import SessionPage from '../SessionPage/BrowserSession';
+import { SignUpModal } from '../SessionPage/SessionSignUp';
+import { ModalSignin } from '../SessionPage/SessionSignin';
+import AUthModalContent from './AUthModalContent';
 
 const AuthModal = () => {
-  const { authModal, closeAuthModal } = useAuth();
+  const {
+    authModal,
+    closeAuthModal,
+    user,
+    restoreSession,
+    setShowSessionPage,
+    showSessionPage,
+    logout,
+  } = useAuth();
+
+  const [sessionUsers, setSessionUsers] = useState([]);
+  if (user) return null;
+  useEffect(() => {
+    if (authModal.show && !user) {
+      const stored = sessionStorage.getItem('sessionUsers');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSessionUsers(parsed);
+          setShowSessionPage(true);
+        } else {
+          setShowSessionPage(false);
+        }
+      } else {
+        setShowSessionPage(false);
+      }
+    }
+  }, [authModal.show, user]);
 
   return (
-    <Modal 
-      show={authModal.show} 
-      onHide={closeAuthModal} 
+    <Modal
+      show={authModal.show}
+      onHide={closeAuthModal}
       centered
-      backdrop="static"
       dialogClassName="auth-modal"
       contentClassName="auth-modal-content"
-      style={{padding:'0px'}} >
+    >
       <Modal.Body className="p-0 auth-modal-body">
-        <Tabs
-          defaultActiveKey={authModal.defaultTab}
-          className="auth-tabs mb-0"
-          fill>
-          <Tab 
-            eventKey="login" 
-            title="Login"
-            className="auth-tab"
-            tabClassName="auth-tab-button"
-          >
-            <div className="auth-content">
-              <Signin modal={true} onSuccess={closeAuthModal} />
-            </div>
-          </Tab>
-          <Tab 
-            eventKey="signup" 
-            title="Sign Up"
-            className="auth-tab"
-            tabClassName="auth-tab-button"
-          >
-            <div className="auth-content">
-              <SignUp modal={true} onSuccess={closeAuthModal} />
-            </div>
-          </Tab>
-        </Tabs>
+        <AUthModalContent />
+        
       </Modal.Body>
     </Modal>
   );

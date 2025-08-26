@@ -1,112 +1,209 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import PropTypes from 'prop-types';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
+import PropTypes from "prop-types";
 import LoadingOverlay from "../../assets/projectOverlay.jsx";
-import { showToast } from "../../ToastAlert/index.jsx";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 const PostContext = createContext();
+const API_DELAY_MS = 200;
+const MAX_RETRIES = 8;
+const LIMIT = 20;
+const RATE_LIMIT_BACKOFF_FACTOR = 1;
 
-export const PostProvider = ({ children, user }) => {
-    const [HomePostData, setHomePostData] = useState([]);
-    const [UserProfilePostData, setUserProfilePostData] = useState([]);
-    const [SidepostData, setSidepostData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState(null);
-    const [singlePostLoading, setSinglePostLoading] = useState(false);
-    const [currentPost, setCurrentPost] = useState(null);
+const PostProvider = ({ children, user, token }) => {
+  const [HomePostData, setHomePostData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [offset, setOffset] = useState(0);
+  const offsetRef = useRef(0); // NEW
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [currentTab, setCurrentTab] = useState(null);
 
-    const getVisitorId = () => {
-        const storedVisitorId = localStorage.getItem('visitor_id');
-        if (storedVisitorId) {
-            return storedVisitorId;
+  const lastRequestTime = useRef(0);
+  const retryCount = useRef(0);
+  const activeRequests = useRef(new Set());
+  const abortControllers = useRef({});
+  const loadingRef = useRef(false); // NEW
+  // console.log(HomePostData)
+  const getVisitorId = useCallback(() => {
+    const stored = localStorage.getItem("visitor_id");
+    if (stored) return stored;
+    const id = "visitor_" + uuidv4();
+    localStorage.setItem("visitor_id", id);
+    return id;
+  }, []);
+  // const userId = 'djhdwjdmfmdwdwddddddddwdwddd';
+  const userId = user?.id || getVisitorId();
+
+  const fetchPost = useCallback(async (loadMore = false, tab = currentTab, passedOffset = offsetRef.current) => {
+    if (!tab) return;
+
+    const currentOffset = loadMore ? passedOffset : 0;
+    const requestId = `${tab}-${currentOffset}`;
+
+    if (activeRequests.current.has(requestId)) return;
+    activeRequests.current.add(requestId);
+
+    const controller = new AbortController();
+    abortControllers.current[requestId] = controller;
+
+    try {
+      const now = Date.now();
+      const timeSinceLastRequest = now - lastRequestTime.current;
+      if (timeSinceLastRequest < API_DELAY_MS) {
+        await new Promise((res) =>
+          setTimeout(res, API_DELAY_MS - timeSinceLastRequest)
+        );
+      }
+      lastRequestTime.current = Date.now();
+      const endpoint = `${import.meta.env.VITE_API_URL
+        }/api/v1/meme/${userId}/${tab}/${currentOffset}/${LIMIT}`;
+      // 
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        signal: controller.signal,
+      });
+
+      if (response.status === 429) {
+        retryCount.current++;
+        if (retryCount.current <= MAX_RETRIES) {
+          const retryAfter =
+            parseInt(response.headers.get("Retry-After")) ||
+            RATE_LIMIT_BACKOFF_FACTOR ** retryCount.current;
+          await new Promise((res) => setTimeout(res, retryAfter * 1000));
+          return fetchPost(loadMore, tab, passedOffset);
         }
-        const newVisitorId = 'visitor_' + uuidv4();
-        localStorage.setItem('visitor_id', newVisitorId);
-        return newVisitorId;
-    };
+        throw new Error("Too many requests. Please try again later.");
+      }
 
-    const userId = user?.user?.id || getVisitorId();
+      retryCount.current = 0;
+      const data = await response.json();
 
-    useEffect(() => {
-        fetchPost();
-    }, [userId]);
+      if (data.status && Array.isArray(data.data)) {
+        setHomePostData((prev) =>
+          loadMore ? [...prev, ...data.data] : data.data
+        );
+        const newOffset = currentOffset + data.data.length;
+        setOffset(newOffset);
+        offsetRef.current = newOffset;
 
-    const fetchPost = async () => {
-        setMessage("");
-        setLoading(true);
-        try {
-            const endpoint = `${import.meta.env.VITE_API_URL}/api/v1/meme/${userId}`;
-            const response = await fetch(endpoint, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    ...(user?.token && { Authorization: `Bearer ${user.token}` })
-                },
-            });
-            const responseData = await response.json();
-            console.log('responding __', responseData);
+        setHasMore(data.data.length === LIMIT);
+        setError(null);
+      } else {
+        if (!loadMore) setHomePostData([]);
+        setHasMore(false);
+      }
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        setError(err.message || "Error loading posts");
+      }
+    } finally {
+      activeRequests.current.delete(requestId);
+      delete abortControllers.current[requestId];
+      loadMore ? setIsFetchingMore(false) : setLoading(false);
+      loadingRef.current = false; // NEW
+    }
+  }, [userId, token, currentTab]);
 
-            if (responseData.status && Array.isArray(responseData.data)) {
-                setHomePostData(responseData.data);
-            } else {
-                setHomePostData([]);
-                console.warn("Unexpected response format:", responseData);
-                if (!user?.user?.id) {
-                    setMessage({
-                        type: 'info',
-                        message: 'Sign in to see personalized content'
-                    });
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching posts:", error);
-            setHomePostData([]);
-            setMessage({
-                type: 'error',
-                message: 'Failed to load posts'
-            });
-        } finally {
-            setLoading(false);
+  const loadMorePosts = useCallback(() => {
+    if (isFetchingMore || !hasMore || !currentTab) return;
+    setIsFetchingMore(true);
+    fetchPost(true, currentTab, offsetRef.current);
+  }, [isFetchingMore, hasMore, currentTab, fetchPost]);
+
+  const changeTab = useCallback((newTab) => {
+    if (newTab !== currentTab) {
+      for (const id in abortControllers.current) {
+        if (id.startsWith(currentTab)) {
+          abortControllers.current[id]?.abort();
+          delete abortControllers.current[id];
         }
-    };
+      }
+      activeRequests.current.clear();
+      setOffset(0);
+      offsetRef.current = 0;
+      setHasMore(true);
+      setHomePostData([]);
+      setCurrentTab(newTab);
+      setLoading(true);
+      fetchPost(false, newTab, 0);
+    }
+  }, [currentTab, fetchPost]);
 
-    // Function to add a new post to the HomePostData
-    const addNewPost = (newPost) => {
-        setHomePostData(prevPosts => [newPost, ...prevPosts]);
-    };
+  const refreshPosts = useCallback(() => {
+    if (!currentTab) return;
+    for (const id in abortControllers.current) {
+      abortControllers.current[id]?.abort();
+      delete abortControllers.current[id];
+    }
+    activeRequests.current.clear();
+    setOffset(0);
+    offsetRef.current = 0;
+    setHasMore(true);
+    setLoading(true);
+    fetchPost(false, currentTab, 0);
+  }, [currentTab, fetchPost]);
 
-    return (
-        <PostContext.Provider
-            value={{
-                HomePostData,
-                loading,
-                UserProfilePostData,
-                message,
-                currentPost,
-                singlePostLoading,
-                fetchPost,
-                refreshPosts: fetchPost,
-                addNewPost // Expose the addNewPost function
-            }}
-        >
-            {loading && <LoadingOverlay />}
-            {children}
-        </PostContext.Provider>
-    );
+  const addNewPost = useCallback((newPost) => {
+    setHomePostData((prev) => [newPost, ...prev]);
+    setOffset((prev) => prev + 1);
+    offsetRef.current += 1;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      for (const id in abortControllers.current) {
+        abortControllers.current[id]?.abort();
+      }
+    };
+  }, []);
+
+  return (
+    <PostContext.Provider
+      value={{
+        HomePostData,
+        loading,
+        error,
+        isFetchingMore,
+        hasMore,
+        currentTab,
+        fetchPost,
+        loadMorePosts,
+        changeTab,
+        addNewPost,
+        refreshPosts,
+      }}
+    >
+      {loading && <LoadingOverlay />}
+      {children}
+    </PostContext.Provider>
+  );
 };
 
-export const usePost = () => useContext(PostContext);
+const usePost = () => {
+  const context = useContext(PostContext);
+  if (!context) {
+    throw new Error("usePost must be used within a PostProvider");
+  }
+  return context;
+};
 
 PostProvider.propTypes = {
-    user: PropTypes.shape({
-        user: PropTypes.shape({
-            id: PropTypes.string
-        }),
-        token: PropTypes.string
-    }),
-    children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  user: PropTypes.object,
+  token: PropTypes.string,
 };
 
-PostProvider.defaultProps = {
-    user: null
-};
+export { PostProvider, usePost };
+export default PostProvider;

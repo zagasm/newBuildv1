@@ -1,0 +1,6 @@
+.report-modal {
+  z-index: 1060 !important; /* higher than Bootstrap default 1050 */
+}
+.report-modal .modal-dialog {
+  z-index: 1070 !important;
+}

@@ -1,122 +1,262 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../pageAssets/Navbar';
-import default_profilePicture from '../../../assets/avater_pix.avif';
-import { FiEdit, FiCamera, FiMoreHorizontal, FiX } from 'react-icons/fi';
+import default_profilePicture from '../../../assets/avater_pix.webp';
+import { FiCamera, FiEdit } from 'react-icons/fi';
 import './headerStyling.css';
-import ShimmerLoader from '../../../component/assets/Loader/profileHeaderLoader';
 import { useAuth } from "../../auth/AuthContext";
+import profile_page_frame from '../../../assets/profile_page_frame.png';
+import camera_filled from '../../../assets/nav_icon/camera_filled.png';
+import Cropper from "react-easy-crop";
 import EditProfileModal from "./editProfileModal";
-import profile_page_frame from '../../../assets/profile_page_frame.png'
-
-
-
-// Mock data
-const mockProfileData = {
-    user_id: "12345",
-    user_firstname: "John",
-    user_lastname: "Doe",
-    user_name: "johndoe",
-    user_picture: null,
-    post_count: 42,
-    followers_count: 1024,
-    following_count: 56,
-    i_am_following: false,
-    bio: "Digital creator | Photography enthusiast | Travel lover"
-};
+import FollowButton from "../../../component/Posts/PostSettingsModal/followButton";
+import StartChatButton from "../../../component/chats/startConversationBtn";
+import { useProfileImageUpload } from "./useProfileImageUpload";
+import ProfilePage from "..";
 
 function ProfileHeader() {
-    const { user, isAuthenticated, logout, showAuthModal } = useAuth();
+    const { user, logout, token } = useAuth();
     const { profileId } = useParams();
+    const { profileUploading, coverUploading, uploadProfilePicture, uploadCoverPhoto } = useProfileImageUpload();
+    const [ProfileData, setProfileData] = useState(null);
     const [isProfileLoading, setIsProfileLoading] = useState(true);
-    const [profileData, setProfileData] = useState(null);
+    const [message, setMessage] = useState(null);
+    const [cropModalOpen, setCropModalOpen] = useState(false);
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+    const [selectedCover, setSelectedCover] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const navigate = useNavigate();
+    // 🔹 Fetch profile from API
+    const fetchProfileById = async (id) => {
+        setIsProfileLoading(true);
+        setMessage(null);
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/v1/users/profile/${id}/${user?.meta_data.id || ''}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setProfileData(mockProfileData);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const data = await response.json();
+            if (data?.user) {
+                setProfileData(data.user);
+                return data.user;
+            } else {
+                throw new Error("No profile data found");
+            }
+        } catch (error) {
+            setMessage({ type: "error", message: error.message || "Failed to load profile" });
+            return null;
+        } finally {
             setIsProfileLoading(false);
-        }, 800);
-        return () => clearTimeout(timer);
-    }, [profileId]);
-
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
+        }
     };
 
-    if (isProfileLoading) return <ShimmerLoader />;
-    if (!profileData) return <div className="error-message">Profile not found</div>;
+    useEffect(() => {
+        if (!profileId) return;
 
-    const isOwnProfile = user?.user_id === profileId;
-    const profileImage = profileData.user_picture || default_profilePicture;
-    const fullName = `${profileData.user_firstname} ${profileData.user_lastname}`;
-    const username = profileData.user_name ? `@${profileData.user_name}` : "";
+        // 🔹 If the logged-in user is viewing their own profile → use session data
+        if (user?.id === profileId) {
+            setProfileData(user);
+            setIsProfileLoading(false);
+        } else {
+            fetchProfileById(profileId);
+        }
+    }, [profileId, user]);
 
-    return (
-        <div className="profile-header-container">
-            <Navbar />
+    // 🔹 Derived profile info
+    const { email, isOwnProfile, fullName, cover_photo, username, profileImage } = useMemo(() => {
+        const safeUser = ProfileData || {};
+        const timestamp = Date.now();
+        const processImageUrl = (url, fallback) =>
+            url?.startsWith('http') ? `${url.split('?')[0]}?t=${timestamp}` : fallback;
 
-            {/* Cover Photo */}
-            <div className="cover-photo">
-                <div
-                    className="cover-gradient"
-                    style={{
-                        background: `linear-gradient(to bottom, rgba(0, 0, 0, 0.36), rgba(0, 0, 0, 0.29)), url(${profile_page_frame})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                    }}
-                >
-                    <button className="edit-cover-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" viewBox="0 0 16 16">
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.05l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                            <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+        return {
+            isOwnProfile: user?.id === profileId,
+            fullName: `${safeUser?.first_name || ''} ${safeUser?.last_name || ''}`.trim(),
+            username: safeUser?.username ? `@${safeUser.username}` : '',
+            email: safeUser?.email || '',
+            profileImage: processImageUrl(safeUser?.meta_data?.profile_picture, default_profilePicture),
+            cover_photo: processImageUrl(safeUser?.meta_data?.cover_photo, profile_page_frame)
+        };
+    }, [ProfileData, user, profileId]);
 
-            {/* Profile Content */}
-            <div className="profile-content">
-                {/* Profile Picture */}
-                <div className="profile-picture-container">
-                    <div className="profile-picture-wrapper">
-                        <img
-                            src={profileImage}
-                            alt="Profile"
-                            className="profile-picture"
-                            onError={(e) => e.target.src = default_profilePicture}
-                        />
-                        {isOwnProfile && (
-                            <button className="edit-picture-btn">
-                                <FiCamera />
-                            </button>
-                        )}
+    const handleProfilePicChange = (e) => {
+        const file = e.target.files[0];
+        if (file) uploadProfilePicture(file);
+    };
+
+    const handleCoverPicSelect = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            setSelectedCover(reader.result);
+            setCropModalOpen(true);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const onCropComplete = (_, croppedPixels) => setCroppedAreaPixels(croppedPixels);
+    const toggleUserProfileUpdateModal = () => setIsModalOpen(prev => !prev);
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        logout();
+        navigate('/');
+    };
+ console.log(ProfileData);
+    // 🔹 Loading skeleton
+    if (isProfileLoading) {
+        return (
+            <div className="profile-header-container">
+                <Navbar />
+                <div className="cover-photo mt-5 shimmer-cover"></div>
+                <div className="profile-content">
+                    <div className="profile-picture-container shimmer-circle"></div>
+                    <div className="profile-info d-flex justify-content-center">
+                        <div className="text-center line-height">
+                            <div className="shimmer-line w-50"></div>
+                            <div className="shimmer-line w-25 mt-2"></div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        );
+    }
 
-                {/* Profile Info */}
-                <div className="profile-info">
-                    <h1 className="profile-name">{fullName}</h1>
-                    <p className="profile-username">{username}</p>
+    return (
+        <>
+            <div className="profile-header-container">
+                <Navbar />
+
+                {/* COVER PHOTO */}
+                <div className="cover-photo mt-5">
+                    <div
+                        className="cover-gradient "
+                        style={{
+                            background: `linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.14)), url(${cover_photo}) center / cover no-repeat`
+                        }}
+                    >
+                        {coverUploading && (
+                            <div className="cover-upload-overlay">
+                                <div className="spinner-border text-light" role="status"></div>
+                            </div>
+                        )}
+
+                        {isOwnProfile && (
+                            <div>
+                             
+                                <label className="edit-cover-btn cover_picture">
+                                    <img src={camera_filled} alt="" style={{ width: '15px' }} />
+                                    <input type="file" accept="image/*" hidden onChange={handleCoverPicSelect} />
+                                </label>
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        <Link to={'/account'} className="backBtn ">
+                            <i className="fa fa-angle-left"></i>
+                        </Link>
+                    </div>
+                </div>
+                {/* PROFILE PICTURE */}
+                <div className="profile-content">
+                    <div className="profile-picture-container">
+                        <div className="profile-picture-wrapper">
+                            <img src={profileImage} alt="Profile" className="profile-picture" />
+                            {profileUploading && (
+                                <div className="profile-upload-loade upload-profile-image-loade">
+                                    <div className="spinner-border" style={{ color: '#8000ff' }} role="status"></div>
+                                </div>
+                            )}
+                            {isOwnProfile && (
+                                <label className="edit-picture-btn">
+                                    <FiCamera />
+                                    <input type="file" accept="image/*" hidden onChange={handleProfilePicChange} />
+                                </label>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* INFO */}
+                    <div className="profile-info">
+                        <div className="text-center line-height text-capitalize">
+                            <h1 className="profile-name">{fullName || 'User'}</h1>
+                            {username || email ? <p className="profile-username">{username || email}</p> : null}
+                        </div>
+                    </div>
+
+                    {/* ACTION BUTTONS */}
+                    {user && (
+                        <div className="profile-actions" style={{ minWidth: "200px" }}>
+                            {isOwnProfile ? (
+                                <div>
+                                    <button className="edit-profile-btn" onClick={toggleUserProfileUpdateModal}>
+                                        <FiEdit />
+                                        <span>Edit Profile</span>
+                                    </button>
+
+                                </div>
+                            ) : (
+                                <div className="d-flex justify-content-center align-items-center gap-2">
+                                    <FollowButton following={ProfileData && ProfileData.is_following} profile={true} userId={profileId} />
+                                    <StartChatButton
+                                        recipientId={profileId}
+                                        onChatStarted={(chatData) => {
+                                            if (chatData.users[0].meta_data.user_id) {
+                                                navigate(`/chat/${chatData.users[0].meta_data.user_id}`);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
-                {user && (
-                    <>
-                        <div className="profile-actions">
-                            <button className="edit-profile-btn" onClick={toggleModal}>
-                                <FiEdit />
-                                <span>Edit Profile</span>
-                            </button>
+                {/* CROP MODAL */}
+                {cropModalOpen && (
+                    <div className="crop-modal">
+                        <div className="crop-container">
+                            <div className="cropper-wrapper">
+                                <Cropper
+                                    image={selectedCover}
+                                    crop={crop}
+                                    zoom={zoom}
+                                    aspect={3 / 1}
+                                    onCropChange={setCrop}
+                                    onZoomChange={setZoom}
+                                    onCropComplete={onCropComplete}
+                                />
+                            </div>
+                            <div className="crop-actions">
+                                <button type="button" onClick={() => setCropModalOpen(false)}>Cancel</button>
+                                <button
+                                    type="button"
+                                    onClick={() => uploadCoverPhoto(selectedCover, croppedAreaPixels)}
+                                    disabled={coverUploading}
+                                    style={{ background: '#8000ff', color: '#fff' }}
+                                >
+                                    {coverUploading ? "Uploading..." : "Save"}
+                                </button>
+                            </div>
                         </div>
-                        <a style={{ cursor: 'pointer' }} onClick={() => logout()} className="text-center"><i className="fa fa-lock"></i> Log out</a>
-                    </>
+                    </div>
                 )}
+                <EditProfileModal isOpen={isModalOpen} onClose={toggleUserProfileUpdateModal} />
             </div>
-
-            {/* Edit Profile Modal */}
-            <EditProfileModal isOpen={isModalOpen} onClose={toggleModal} />
-        </div>
+            <ProfilePage />
+        </>
     );
 }
 

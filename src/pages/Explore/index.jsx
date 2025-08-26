@@ -1,160 +1,167 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Spinner, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SideBarNav from '../pageAssets/sideBarNav.jsx';
 import RightBarComponent from '../pageAssets/rightNav.jsx';
 import SuggestedFriends from '../../component/Friends/suggestedFriends.jsx';
 import './exploreSTyle.css';
 import { useAuth } from '../auth/AuthContext/index.jsx';
-import default_profilePicture from '../../assets/avater_pix.avif';
+import default_profilePicture from '../../assets/avater_pix.webp';
 import ShimmerExploreLoader from './ShimmerExploreLoader/index.jsx';
 import fire_icon from '../../assets/search_icon/fire_icon.png';
 import follow_line from '../../assets/search_icon/follow-line.png';
 import laugh_icon from '../../assets/search_icon/laugh_icon.png';
-import meme_icon from '../../assets/search_icon/meme_icon.png';
+import { usePost } from '../../component/Posts/PostContext/seachPost.jsx';
+import SinglePostTemplate from '../../component/Posts/single.jsx';
+import SinglePostLoader from '../../component/assets/Loader/SinglePostLoader/index.jsx';
+
 const RECENT_KEY = 'zagasm_recent_searches';
 
-const truncateText = (text, maxLength) =>
-  text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
-
-function groupByDate(items) {
-  const groups = {};
-  items.forEach(item => {
-    const date = new Date(item.timestamp);
-    const today = new Date();
-    const label =
-      date.toDateString() === today.toDateString()
-        ? 'Today'
-        : new Date(today.setDate(today.getDate() - 1)).toDateString() ===
-          date.toDateString()
-        ? 'Yesterday'
-        : date.toLocaleDateString();
-    groups[label] = groups[label] || [];
-    groups[label].push(item);
-  });
-  return groups;
-}
-
 function ExplorePage() {
-   const [query, setQuery] = useState('');
-  const [filteredResults, setFilteredResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingFollow, setLoadingFollow] = useState(null);
-  const [recentSearches, setRecentSearches] = useState([]);
-  const [activeTab, setActiveTab] = useState('trending');
+  const [query, setQuery] = useState('');
   const { user } = useAuth();
 
-  // Load recent from localStorage
+  // Use the post context for search
+  const {
+    HomePostData: searchResults,
+    loading,
+    searchUsers,
+    changeTab,
+    currentTab,
+    fetchPost
+  } = usePost();
+
+
+  // Real-time search handler
+  const handleInputChange = useCallback((e) => {
+    const value = e.target.value;
+    setQuery(value);
+    searchUsers(value); // This will trigger the debounced search
+  }, [searchUsers]);
+
+  const handleSearchSubmit = useCallback((e) => {
+    if (e) e.preventDefault();
+    if (query.trim() === '') return;
+    searchUsers(query); // Immediate search on submit
+  }, [query, searchUsers]);
+
+  const handleTabChange = useCallback((newTab) => {
+    // Clear search query when changing tabs
+    setQuery('');
+    changeTab(newTab);
+  }, [changeTab]);
+
+  // Fetch tab content when component mounts or tab changes
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
-    setRecentSearches(stored);
-  }, []);
-
-  // Load recent from localStorage
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
-    setRecentSearches(stored);
-  }, []);
-
-  const saveToRecentSearches = person => {
-    const minimal = {
-      user_id: person.user_id,
-      user_name: person.user_name,
-      user_firstname: person.user_firstname,
-      user_lastname: person.user_lastname,
-      user_picture: person.user_picture,
-      timestamp: Date.now(),
-    };
-    const updated = [minimal, ...recentSearches.filter(r => r.user_id !== minimal.user_id)];
-    if (updated.length > 10) updated.splice(10);
-    setRecentSearches(updated);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
-  };
-
-  const removeFromRecent = id => {
-    const updated = recentSearches.filter(r => r.user_id !== id);
-    setRecentSearches(updated);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
-  };
-
-  const clearAllRecent = () => {
-    setRecentSearches([]);
-    localStorage.removeItem(RECENT_KEY);
-  };
-
-  const handleInputChange = async e => {
-    const v = e.target.value;
-    setQuery(v);
-    if (v.trim() === '') {
-      setFilteredResults([]);
-      return;
+    if (currentTab && !query) {
+      fetchPost( query && (false, currentTab, 0, ''));
     }
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append('api_secret_key', 'Zagasm2025!Api_Key_Secret');
-      formData.append('user_id', user.user_id);
-      formData.append('query', v);
-      const resp = await axios.post(
-        'https://zagasm.com/includes/ajax/users/search.php',
-        formData,
-        { withCredentials: true }
+  }, [currentTab, query, fetchPost]);
+
+  const renderSearchResults = () => {
+    if (query === '') {
+      return (
+        <div className="recent-searches-container">
+          {recentSearches.length > 0 && (
+            <div className="recent-searches-header">
+              <h6>Recent Searches</h6>
+              <button
+                className="clear-recent-btn text-primary"
+                onClick={clearRecentSearches}
+              >
+                Clear all
+              </button>
+            </div>
+          )}
+          {recentSearches.map((item, index) => (
+            <div
+              key={`${item.user_id}-${index}`}
+              className="recent-search-item d-flex justify-content-between align-items-center px-3 py-2"
+            >
+              <Link
+                to={`/${item.user_id}`}
+                className="d-flex align-items-center text-decoration-none text-dark flex-grow-1"
+                onClick={() => saveToRecentSearches(item)}
+              >
+                <img
+                  src={item.profile_picture || default_profilePicture}
+                  alt={item.username}
+                  className="rounded-circle me-3"
+                  width="40"
+                  height="40"
+                />
+                <div>
+                  <div className="fw-semibold">{item.username}</div>
+                  {item.full_name && (
+                    <div className="text-muted small">{item.full_name}</div>
+                  )}
+                </div>
+              </Link>
+              <button
+                className="btn btn-link text-muted p-0"
+                onClick={() => removeRecentSearch(item.user_id)}
+              >
+                <i className="feather-x"></i>
+              </button>
+            </div>
+          ))}
+        </div>
       );
-      setFilteredResults(resp.data.success ? resp.data.results : []);
-    } catch (err) {
-      console.error(err);
-      setFilteredResults([]);
-    } finally {
-      setLoading(false);
     }
-  };
 
-  const toggleFollow = async (uid, isFollowing, idx) => {
-    setLoadingFollow(uid);
-    try {
-      const formData = new FormData();
-      formData.append("api_secret_key", "Zagasm2025!Api_Key_Secret");
-      formData.append("user_id", user.user_id);
-      formData.append("do", isFollowing ? "unfollow" : "follow");
-      formData.append("id", uid);
-      const resp = await fetch(`${import.meta.env.VITE_API_URL}/includes/ajax/users/connect.php`, {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
-      const json = await resp.json();
-      if (json.success) {
-        const copy = [...filteredResults];
-        copy[idx].i_am_following = !isFollowing;
-        setFilteredResults(copy);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingFollow(null);
+    if (loading) {
+      return <SinglePostLoader />;
     }
-  };
 
-  const grouped = groupByDate(recentSearches);
+    if (!searchResults || searchResults.length === 0) {
+      return (
+        <div className="text-center py-5">
+          <i className="feather-search display-4 text-muted mb-3"></i>
+          <h5>No results found</h5>
+          <p className="text-muted">Try searching for something else</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="search-results">
+        {searchResults.map((post, index) => (
+          <div key={post.id || index}>
+            <SinglePostTemplate seachQuery={query} data={post} />
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const renderTabContent = () => {
-    switch(activeTab) {
-      case 'trending':
-        return <div className="tab-content">Trending content goes here</div>;
-      case 'creators':
-        return <div className="tab-content">Creators content goes here</div>;
-      case 'foryou':
-        return <div className="tab-content">For You content goes here</div>;
-      case 'following':
-        return <div className="tab-content">Following content goes here</div>;
-      default:
-        return null;
+    if (loading) {
+      return <SinglePostLoader />;
     }
+
+    if (!searchResults || searchResults.length === 0) {
+      return (
+        <div className="text-center py-5">
+          <i className="feather-grid display-4 text-muted mb-3"></i>
+          <h5>No content available</h5>
+          <p className="text-muted">Try searching for something or check back later</p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="tab-content-results">
+        {query && searchResults.map((post, index) => (
+          <div key={post.id || index}>
+            <SinglePostTemplate data={post} />
+          </div>
+        ))}
+      </div>
+    );
   };
 
- return (
+  return (
     <div className="py-4 explore-page">
       <div className="container-fluid p-0">
         <SideBarNav />
@@ -163,31 +170,40 @@ function ExplorePage() {
             {/* Enhanced Search Header */}
             <div className="search-header-container">
               <div className="profile-pic-container">
-                <img 
-                  src={user?.user_picture || default_profilePicture} 
+                <img
+                  src={user?.meta_data?.profile_picture || default_profilePicture}
                   alt="Profile"
                   className="profile-pic"
                 />
               </div>
-              
+
               <div className="search-input-container">
-                <div className="search-input-wrapper">
-                  <i className="feather-search search-icon"></i>
-                  <input
-                    type="text"
-                    className="search-input"
-                    placeholder="Search for memes and creators"
-                    value={query}
-                    onChange={handleInputChange}
-                  />
-                  {query && (
-                    <button className="clear-search-btn" onClick={() => setQuery('')}>
-                      <i className="feather-x"></i>
-                    </button>
-                  )}
-                </div>
+                <form onSubmit={handleSearchSubmit} className="w-100">
+                  <div className="search-input-wrapper">
+                    <i className="feather-search search-icon"></i>
+                    <input
+                      type="text"
+                      className="search-input"
+                      placeholder="Search for memes and creators"
+                      value={query}
+                      onChange={handleInputChange}
+                    />
+                    {query && (
+                      <button
+                        type="button"
+                        className="clear-search-btn"
+                        onClick={() => {
+                          setQuery('');
+                          searchUsers('');
+                        }}
+                      >
+                        <i className="feather-x"></i>
+                      </button>
+                    )}
+                  </div>
+                </form>
               </div>
-              
+
               <button className="settings-btn">
                 <i className="feather-settings"></i>
               </button>
@@ -197,28 +213,16 @@ function ExplorePage() {
             <div className="minimal-tabs-container">
               <div className="minimal-tabs">
                 <button
-                  className={`minimal-tab ${activeTab === 'trending' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('trending')}
+                  className={`minimal-tab ${currentTab === 'foryou' ? 'active' : ''}`}
+                  onClick={() => handleTabChange('foryou')}
                 >
-                  <img src={fire_icon} alt="trending memes" /> Trending
+                  <img src={laugh_icon} alt="For You" /> For You
                 </button>
                 <button
-                  className={`minimal-tab ${activeTab === 'creators' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('creators')}
+                  className={`minimal-tab ${currentTab === 'following' ? 'active' : ''}`}
+                  onClick={() => handleTabChange('following')}
                 >
-                   <img src={meme_icon} alt="trending memes" />  Creators
-                </button>
-                <button
-                  className={`minimal-tab ${activeTab === 'foryou' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('foryou')}
-                >
-                 <img src={laugh_icon} alt="trending memes" /> For You
-                </button>
-                <button
-                  className={`minimal-tab ${activeTab === 'following' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('following')}
-                >
-                   <img src={follow_line} alt="trending memes" />  Following
+                  <img src={follow_line} alt="Following" /> Following
                 </button>
               </div>
               <div className="minimal-tabs-line"></div>
@@ -227,30 +231,13 @@ function ExplorePage() {
             {/* Content Area */}
             <div className="tab-content-area">
               {query ? (
-                <div className="search-results">
-                  {loading ? (
-                    <ShimmerExploreLoader />
-                  ) : filteredResults.length > 0 ? (
-                    filteredResults.map((p, i) => (
-                      <Link
-                        to={`/${p.user_id}`}
-                        key={p.user_id}
-                        className="ig-search-item d-flex justify-content-between align-items-center px-3 py-2 text-decoration-none text-dark"
-                        onClick={() => saveToRecentSearches(p)}
-                      >
-                        {/* ... (existing search result item) ... */}
-                      </Link>
-                    ))
-                  ) : (
-                    <div className="ig-search-no-result">No users found</div>
-                  )}
-                </div>
+                renderSearchResults()
               ) : (
                 renderTabContent()
               )}
             </div>
           </main>
-          
+
           <RightBarComponent>
             <SuggestedFriends />
           </RightBarComponent>

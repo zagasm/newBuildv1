@@ -1,0 +1,195 @@
+
+.fullscreen-post-settings-modal .modal-body {
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    /* height: calc(100vh - 56px); */
+}
+
+.fullscreen-preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    z-index: 9999;
+    background-color: rgba(71, 65, 65, 0.521);
+}
+
+.preloader-content {
+    text-align: center;
+}
+
+.preloader-spinner {
+    width: 3rem;
+    height: 3rem;
+}
+
+
+/* Base styles */
+.fullscreen-post-settings-modal {
+    width: 100vw;
+    /* max-width: none; */
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    border: none;
+    overflow: hidden;
+}
+
+.fullscreen-post-settings-modal .modal-content {
+    height: auto;
+    max-height: 90vh;
+    border-radius: 50%;
+    margin: 0 auto;
+    max-width: 500px;
+    /* width: 300px; */
+}
+
+/* Backdrop styles */
+.fullscreen-post-settings-modal .modal-post-settings-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Animation keyframes */
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Desktop/Laptop styles (768px and up) */
+@media (min-width: 768px) {
+    .fullscreen-post-settings-modal {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fullscreen-post-settings-modal .modal-dialog {
+        margin: 0 auto;
+        max-width: 1200px;
+        width: 90%;
+        animation: modalFadeIn 0.3s ease-out forwards;
+
+    }
+
+    .fullscreen-post-settings-modal .modal-content {
+        border-radius: 50px;
+        overflow: hidden;
+        width: 100%;
+        max-height: 90vh;
+        margin: 0 auto;
+        border-radius: 12px !important;
+        /* Slightly rounded on desktop */
+    }
+
+    .fullscreen-post-settings-modal .modal-body {
+        flex-direction: row;
+        max-height: calc(90vh - 56px);
+
+    }
+    .fullscreen-post-settings-modal .modal-body.d-flex {
+        display: flex !important;
+    }
+}
+
+/* Mobile styles (767px and below) */
+@media (max-width: 767.98px) {
+    .fullscreen-post-settings-modal .modal-dialog {
+        margin: 0;
+        max-width: 100%;
+        height: auto;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        animation: modalSlideUp 0.3s ease-out forwards;
+    }
+
+    .fullscreen-post-settings-modal .modal-content {
+        height: auto;
+        max-height: 90vh;
+        border-radius: 12px 12px 0 0;
+        border-radius: 16px 16px 0 0 !important;
+        /* Instagram-like rounded corners */
+        overflow: hidden;
+        bottom: 0px;
+        position: fixed;
+        bottom: -0;
+        left: 0;
+        right: 0;
+    }
+
+    .fullscreen-post-settings-modal .modal-body {
+        flex-direction: column;
+        max-height: calc(90vh - 56px);
+    }
+
+  
+    .fullscreen-post-settings-modal .modal-body.d-block {
+        display: block !important;
+    }
+}
+
+
+/* Add these animations to your existing CSS */
+.fullscreen-post-settings-modal.closing .modal-dialog {
+    animation: modalSlideDown 0.3s ease-out forwards;
+}
+
+@keyframes modalSlideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+/* Desktop fade out */
+@media (min-width: 768px) {
+    .fullscreen-post-settings-modal.closing .modal-dialog {
+        animation: modalFadeOut 0.3s ease-out forwards;
+    }
+}
+
+@keyframes modalFadeOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+}
+
+/* Responsive modal sizing */

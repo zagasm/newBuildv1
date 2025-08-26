@@ -1,110 +1,186 @@
-import React, { useState } from 'react';
-import './generalStyling.css';
+import React, { useState, useEffect } from "react";
+import "./generalStyling.css";
+import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import default_profilePicture from "../../assets/avater_pix.webp";
+import UserPost from "./AlluserPosts";
 
 function ProfilePage() {
-    const [activeTab, setActiveTab] = useState('followers');
-    const [visibleCount, setVisibleCount] = useState(4); // Initial number of items to show
-    
-    // Mock data with online images
-    const followersData = [
-        { id: 1, username: 'user1', image: 'https://randomuser.me/api/portraits/women/1.jpg' },
-        { id: 2, username: 'user2', image: 'https://randomuser.me/api/portraits/men/2.jpg' },
-        { id: 3, username: 'user3', image: 'https://randomuser.me/api/portraits/women/3.jpg' },
-        { id: 4, username: 'user4', image: 'https://randomuser.me/api/portraits/men/4.jpg' },
-        { id: 5, username: 'user5', image: 'https://randomuser.me/api/portraits/women/5.jpg' },
-        { id: 6, username: 'user6', image: 'https://randomuser.me/api/portraits/men/6.jpg' },
-        { id: 7, username: 'user7', image: 'https://randomuser.me/api/portraits/women/7.jpg' },
-        { id: 8, username: 'user8', image: 'https://randomuser.me/api/portraits/men/8.jpg' },
-    ];
+    const { profileId } = useParams();
+    const [activeTab, setActiveTab] = useState("followers");
+    const [visibleCount, setVisibleCount] = useState(4);
+    const [followersData, setFollowersData] = useState([]);
+    const [followingData, setFollowingData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const { token } = useAuth();
 
-    const followingData = [
-        { id: 9, username: 'user9', image: 'https://randomuser.me/api/portraits/women/9.jpg' },
-        { id: 10, username: 'user10', image: 'https://randomuser.me/api/portraits/men/10.jpg' },
-        { id: 11, username: 'user11', image: 'https://randomuser.me/api/portraits/women/11.jpg' },
-        { id: 12, username: 'user12', image: 'https://randomuser.me/api/portraits/men/12.jpg' },
-        { id: 13, username: 'user13', image: 'https://randomuser.me/api/portraits/women/13.jpg' },
-    ];
+    const fetchData = async (tab) => {
+        setLoading(true);
+        setError(null);
 
-    const currentData = activeTab === 'followers' ? followersData : followingData;
+        try {
+            const endpoint = tab === "followers"
+                ? `${import.meta.env.VITE_API_URL}/api/v1/users/followers/${profileId}`
+                : `${import.meta.env.VITE_API_URL}/api/v1/users/following/${profileId}`;
+
+            const response = await fetch(endpoint, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data?.status && Array.isArray(data.data)) {
+                if (tab === "followers") {
+                    setFollowersData(data.data);
+                } else {
+                    setFollowingData(data.data);
+                }
+            } else {
+                throw new Error(data.message || "Invalid response format");
+            }
+        } catch (err) {
+            console.error("Fetch error:", err);
+            setError(err.message || "Failed to fetch data");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (profileId) {
+            // Fetch both followers and following data when component mounts
+            fetchData("followers");
+            fetchData("following");
+        }
+    }, [profileId]);
+
+    const currentData = activeTab === "followers" ? followersData : followingData;
     const visibleData = currentData.slice(0, visibleCount);
     const hasMore = visibleData.length < currentData.length;
 
-    const handleSeeMore = () => {
-        setVisibleCount(prev => prev + 4); // Show 4 more items
-    };
+    const handleSeeMore = () => setVisibleCount((prev) => prev + 4);
 
+    const handleTabChange = (tab) => {
+        if (activeTab !== tab) {
+            setActiveTab(tab);
+            setVisibleCount(4);
+        }
+    };
+    const truncateText = (text, maxLength) =>
+        !text ? "" : text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
     return (
-        <div className="container mb-5 pb-5">
+        <div className="profile_page_section_view mb-5 pb-5">
             <div className="row">
                 <div className="col-xl-6 col-sm-12">
-                    <ul className='actions_section'>
+                    <ul className="actions_section">
                         <li>
-                            <b>0</b>
+                            <b className="mr-1" style={{fontWeight:'500'}}>0</b>
                             <span>Posts</span>
                         </li>
                         <li>
-                            <b>{followersData.length}</b>
+                            <b className="mr-1" style={{fontWeight:'500'}}>{followersData.length}</b>
                             <span>Followers</span>
                         </li>
                         <li>
-                            <b>{followingData.length}</b>
+                            <b className="mr-1" style={{fontWeight:'500'}}>{followingData.length}</b>
                             <span>Following</span>
                         </li>
                     </ul>
 
                     <div className="followers_following_user_container mt-5">
-                        {/* Tab Navigation */}
                         <div className="tabs">
-                            <button 
-                                className={`tab ${activeTab === 'followers' ? 'active' : ''}`}
-                                onClick={() => {
-                                    setActiveTab('followers');
-                                    setVisibleCount(4); // Reset visible count when switching tabs
-                                }}
-                            >
+                            <button
+                                className={`tab ${activeTab === "followers" ? "active" : ""}`}
+                                onClick={() => handleTabChange("followers")} >
                                 Followers
                             </button>
-                            <button 
-                                className={`tab ${activeTab === 'following' ? 'active' : ''}`}
-                                onClick={() => {
-                                    setActiveTab('following');
-                                    setVisibleCount(4); // Reset visible count when switching tabs
-                                }}
+                            <button
+                                className={`tab ${activeTab === "following" ? "active" : ""}`}
+                                onClick={() => handleTabChange("following")}
                             >
                                 Following
                             </button>
                         </div>
-
-                        {/* Tab Content */}
                         <div className="tab-content">
-                            <div className="users-grid">
-                                {visibleData.map(user => (
-                                    <div key={user.id} className="user-card">
-                                        <div className="user-avatar-container">
-                                            <img 
-                                                src={user.image} 
-                                                alt={user.username} 
-                                                className="user-avatar"
-                                                onError={(e) => e.target.src = 'https://via.placeholder.com/150'}
-                                            />
-                                        </div>
-                                        <span className="username">{user.username}</span>
+                            {error ? (
+                                <div className="error-message">
+                                    {error}
+                                    <button
+                                        onClick={() => fetchData(activeTab)}
+                                        className="retry-btn px-2 py-2 bg-blue-500 text-white border-0 rounded hover:bg-blue-600"
+                                        style={{ background: "rgba(143, 7, 231, 1)" }}
+                                    >
+                                        Retry
+                                    </button>
+                                </div>
+                            ) : loading ? (
+                                <div className="loading-indicator">
+                                    <div className="spinner"></div>
+                                    <span>Loading...</span>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="users-grid">
+                                        {visibleData.length > 0 ? (
+                                            visibleData.map((user) => (
+                                                <Link  to={`/profile/${user.id}`} key={user.id} className="user-card">
+                                                    <div className="user-avatar-container">
+                                                        <img
+                                                            src={user.profile_picture || default_profilePicture}
+                                                            alt={user.username}
+                                                            className="user-avatar"
+                                                            style={{ borderRadius: "0%" }}
+                                                            loading="lazy"
+                                                        />
+                                                    </div>
+                                                    <span className="username">
+                                                        <Link
+                                                            to={`/profile/${user.id}`}
+                                                            className="text-decoration-none text-dark"
+                                                        >
+                                                            {truncateText(
+                                                                user.username ||
+                                                                `${user.first_name} ${user.last_name}`,
+                                                                10
+                                                            )}
+                                                        </Link>
+                                                    </span>
+                                                </Link>
+                                            ))
+                                        ) : (
+                                            <div className="no-data-message">
+                                                No {activeTab} found
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
+                                    {hasMore && (
+                                        <div className="see-more-container">
+                                            <button
+                                                className="see-more-btn"
+                                                onClick={handleSeeMore}
+                                                disabled={loading}
+                                            >
+                                                {loading ? "Loading..." : `See all ${activeTab}`}
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
-
-                        {/* See More Button - Only show if there are more items */}
-                        {hasMore && (
-                            <div className="see-more-container">
-                                <button className="see-more-btn" onClick={handleSeeMore}>
-                                    See all {activeTab}
-                                </button>
-                            </div>
-                        )}
                     </div>
                 </div>
-                <div className="col-xl-6 col-sm-12">right bar</div>
+                <div className="col-xl-6 col-sm-12">
+                    <UserPost profileId={profileId} />
+                </div>
             </div>
         </div>
     );

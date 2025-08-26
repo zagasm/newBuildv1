@@ -1,0 +1,179 @@
+.comments-section {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    position: relative;
+    width: 100%;
+    border: none;
+    /* background-color: red; */
+    border-radius: 8px;
+    /* box-shadow: 0 1px 3px rgba(0,0,0,0.1); */
+}
+
+
+
+.comments-list {
+    flex: 1;
+    overflow-y: auto;
+    /* max-height: 500px; */
+    height: 300px;
+    margin-bottom: 30px;
+}
+
+.comment-form {
+    background-color: #f8f9fa;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.comment-item {
+    transition: opacity 0.3s ease;
+}
+
+.reply-wrapper {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.replying-to-notice {
+    background-color: #e9f5ff;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.emoji-picker-container {
+    position: absolute;
+    top: 5px;
+    right: 0;
+    z-index: 9999999999999999999999900;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.emoji-picker-wrapper {
+    position: absolute;
+    top: 20px;
+    z-index: 999999999999999999999999999999999999999999999999999999999999999999999999999999;
+    margin-bottom: 0.5rem;
+    display: none;
+}
+
+.emoji-picker-wrapper>div {
+    margin-left: auto;
+    margin-right: auto;
+    display: none;
+
+}
+
+/* Mobile styles */
+
+
+.mobile-comments .comment-form {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.commenter_name {
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+.commenter_name small {
+    font-size: 10px;
+    color: grey
+}
+
+.comment_content {
+    font-size: 14px;
+    margin: 0px;
+    color: grey
+}
+
+/* commentStyle.css */
+/* Nested indentation for infinite replies */
+.nested-comment {
+    margin-left: 16px;
+    border-left: 2px solid #f0f0f0;
+    padding-left: 12px;
+}
+
+.nested-replies {
+    margin-top: 8px;
+}
+
+
+.emoji-slide-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.4);
+    /* semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.emoji-slide-content {
+    background: #fff;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    max-height: 300px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out;
+    padding-top: 10px;
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* Add to commentStyle.css */
+.replies-section .spinner-border {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-width: 0.15em;
+}
+
+/* For SingleComment */
+.nested-replies .spinner-border {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-width: 0.15em;
+}
+
+
+
+
+@media (max-width: 767.98px) {
+    .comments-list {
+        margin-bottom: 200px;
+    }
+}

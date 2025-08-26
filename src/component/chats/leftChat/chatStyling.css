@@ -1,0 +1,41 @@
+.chat_search_input {
+    border-radius: 20px;
+    outline: none;
+    background: rgba(230, 230, 230, 1);
+    width: 100%;
+}
+
+.start_chat_btn_section {
+    margin-top: 40px;
+}
+
+.start_chat_btn_section button {
+    padding: 7px 30px;
+    color: rgba(64, 64, 64, 1);
+    border: 1px solid rgba(204, 204, 204, 1);
+    border-radius: 20px;
+}
+
+.start_chat_btn_section button:hover {
+    background: rgba(238, 218, 251, 1);
+    color: rgba(64, 64, 64, 1);
+}
+
+.unread-indicator {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(143, 7, 231, 1);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.search_chat_input_container {
+    width: 77%;
+}
+
+@media (max-width: 1305px) {
+    .search_chat_input_container {
+        width: 70%;
+        /* height: 30px; */
+    }
+}

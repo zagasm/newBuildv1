@@ -88,7 +88,6 @@
     transition: 0.4s ease-in-out;
 }
 
-
 .side_bar_container .list-sidebar .list-group a li {
     background: none;
     border: none;
@@ -99,12 +98,23 @@
     transition: 0.4s ease-in-out;
 }
 
+.side_bar_container .list-sidebar .list-group a li .chat_counter {
+    margin: 0px;
+    padding: 0px;
+    border: 2px solid white;
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 50%;
+    background: rgba(143, 7, 231, 1);
+}
 
 
 .side_bar_container .list-sidebar .list-group a li img {
     margin-right: 20px;
 }
-
+.create_post_mobile{
+    filter: brightness(1) invert(20)
+}
 .side_bar_container .list-sidebar .list-group a li.active {
     color: white;
     background: linear-gradient(84.41deg, #C207E7 1.78%, #490481 69.04%);
@@ -127,10 +137,13 @@
     position: fixed;
     bottom: 0px;
     z-index: 99;
-    padding: 20px;
+    padding: 20px 20px 10px 20px;
     width: 100%;
     overflow: hidden;
     display: none;
+    margin: 0px;
+    right: 0px;
+    box-sizing: border-box;
 }
 
 .mobile_navbar_container .create_post {
@@ -138,16 +151,16 @@
     right: 30px;
     bottom: 100px;
     background: rgba(143, 7, 231, 1);
-    padding: 20px;
+    padding: 5px;
     border-radius: 50%;
     box-shadow: -13px 10px 5px 0px rgba(128, 128, 128, 0.02);
-
 }
-
 .mobile_navbar_container .create_post img {
     fill: white;
     color: white;
     filter: brightness(0) invert(20);
+    height:60px;
+    width:60px;
 }
 
 .mobile_navbar_container ul {
@@ -228,7 +241,10 @@
     border-radius: 30px;
     /* box-shadow: 1px 0px 1px 0px #808080D6; */
     color: white;
-    background: #8F07E7;
+    background: linear-gradient(50deg, #8F07E7, #C115B5);
+        /* linear-gradient(90deg, #8F07E7 0%, #C115B5 100%); */
+
+    /* background: #8F07E7; */
     height: 40px;
     padding: 0px 00px;
 }
@@ -260,6 +276,10 @@
         width: fit-content;
         margin: 0px;
         border-radius: 0px;
+    }
+
+    .sidebar_bottom_user_details {
+        display: none
     }
 
     .navbar-brand {
@@ -321,6 +341,7 @@
 
     .mobile_navbar_container {
         display: block;
+        box-sizing: border-box;
     }
 
     .shadow-sm.side_bar_container {

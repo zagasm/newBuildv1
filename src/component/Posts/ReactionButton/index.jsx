@@ -60,10 +60,9 @@ export function ReactionButton({
   const sendReactionToServer = async () => {
     setIsLoading(true);
     const actionType = current_i_react ? 'unlike' : 'like';
-
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/meme/${postId}/${actionType}/${userId}`,
+        `${import.meta.env.VITE_API_URL}/api/v1/meme/${postId}/${actionType}/${user.id}`,
         {
           method: 'PUT',
           headers: {

@@ -10,14 +10,14 @@ import { useAuth } from "../../../../pages/auth/AuthContext";
 import Alert from "react-bootstrap/Alert";
 import axios from "axios";
 
-const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
+const PhoneEmailPostSignup = ({ type, userupdate }) => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [proceed, setProceed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const { login } = useAuth();
+  const { login, token } = useAuth();
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -27,7 +27,7 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Skip if the value hasn't changed
     if (type === "email" && email === userupdate.email) {
       setProceed(true);
@@ -40,7 +40,7 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
 
     setIsLoading(true);
     setErrorMessage(null);
-    
+
     try {
       const response = await axios.patch(
         `${import.meta.env.VITE_API_URL}/api/v1/users/update/${userupdate.id}`,
@@ -52,7 +52,7 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
           },
         }
       );
-      
+
       const result = response.data;
       if (result.status === true) {
         setProceed(true);
@@ -62,7 +62,7 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
     } catch (error) {
       let errorMsg = "An error occurred while updating.";
       const backendErrors = error.response?.data?.errors;
-      
+
       if (backendErrors) {
         // Handle both email and phone errors
         if (backendErrors.email) {
@@ -73,7 +73,7 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
           errorMsg = error.response.data.message;
         }
       }
-      
+
       setErrorMessage(errorMsg);
     } finally {
       setIsLoading(false);
@@ -81,11 +81,12 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
   };
 
   if (proceed) {
-    return <SignUpCodecomponent token={token} userupdate={userupdate} type={type} />;
+    return <SignUpCodecomponent userupdate={userupdate} type={type} />;
   }
 
   function skipProcess() {
-    login({ token, user: userupdate });
+    const user = userupdate;
+    login({ token, user });
   }
 
   return (
@@ -183,8 +184,8 @@ const PhoneEmailPostSignup = ({ type, userupdate, token }) => {
               }}
             >
               {isLoading ? (
-                <div className="loader">
-                  <div className="loader-spinner"></div>
+                <div className="loader m-0 m-auto p-0">
+                  <div className="loader-spinner p-0 m-0"></div>
                 </div>
               ) : (
                 "Next"

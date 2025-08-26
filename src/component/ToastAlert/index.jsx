@@ -1,3 +1,4 @@
+// import { zIndex } from "html2canvas/dist/types/css/property-descriptors/z-index";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -10,6 +11,7 @@ const toastOptions = {
   pauseOnHover: true,
   draggable: true,
   theme: "colored",
+  zIndex: 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999,
 };
 
 // Toast Functions

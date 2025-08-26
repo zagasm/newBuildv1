@@ -1,0 +1,9 @@
+.chat-btn{
+    border: 1px solid rgb(228, 214, 214);
+    padding: 0px;
+    font-size:18px;
+}
+.chat-btn:hover{
+    background-color: #a547e4ff;
+    color: white;
+}

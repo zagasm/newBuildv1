@@ -23,12 +23,11 @@ export function ForgetPassword() {
       showToast.error(`Please enter a valid ${isPhone ? 'phone number' : 'email address'}`);
       return;
     }
-
     setIsSubmitting(true);
 
     // Prepare the data in x-www-form-urlencoded format
     const params = new URLSearchParams();
-    params.append('contact', contact);
+    params.append('contact', isPhone ? '+'+contact : contact);
 
     try {
       const response = await axios.post(
@@ -53,6 +52,7 @@ export function ForgetPassword() {
         showToast.error(data.message || "Something went wrong.");
       }
     } catch (err) {
+      console.log(err);
       if (err.response) {
         const status = err.response.status;
         const message = err.response.data?.message || 
@@ -175,7 +175,7 @@ export function ForgetPassword() {
           </motion.form>
         </AuthContainer>
       ) : (
-        <CodeVerification userId={userId} contact={contact} isPhone={isPhone} reset_code={resetCode} />
+        <CodeVerification userId={userId} contact={contact} isPhone={isPhone} setShowCodeVerification={setShowCodeVerification}  />
       )}
     </>
   );

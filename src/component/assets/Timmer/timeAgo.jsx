@@ -15,17 +15,13 @@ const TimeAgo = ({ date }) => {
         if (minutes < 1) {
             return "just now";
         } else if (minutes < 60) {
-            return `${Math.floor(minutes)} minute${minutes >= 2 ? 's' : ''} ago`;
+            return `${Math.floor(minutes)} minute${Math.floor(minutes) !== 1 ? 's' : ''} ago`;
         } else if (hours < 24) {
-            return `${Math.floor(hours)} hour${hours >= 2 ? 's' : ''} ago`;
-        } else if (days < 7) {
-            return `${Math.floor(days)} day${days >= 2 ? 's' : ''} ago`;
-        } else if (days < 30) {
-            return `${Math.floor(days / 7)} week${Math.floor(days / 7) >= 2 ? 's' : ''} ago`;
+            return `${Math.floor(hours)} hour${Math.floor(hours) !== 1 ? 's' : ''} ago`;
         } else if (days < 365) {
-            return `${Math.floor(days / 30)} month${Math.floor(days / 30) >= 2 ? 's' : ''} ago`;
+            return `${Math.floor(days)} day${Math.floor(days) !== 1 ? 's' : ''} ago`;
         } else {
-            return `${Math.floor(years)} year${years >= 2 ? 's' : ''} ago`;
+            return `${Math.floor(years)} year${Math.floor(years) !== 1 ? 's' : ''} ago`;
         }
     };
 

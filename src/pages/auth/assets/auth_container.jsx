@@ -4,7 +4,7 @@ import './style.css';
 import { motion } from "framer-motion";
 import { Link } from 'react-router-dom';
 
-function AuthContainer({ modal, title, description, children }) {
+function AuthContainer({ backRedirect, modal, title, description, children }) {
     return (
         <Fragment>
             <div className={modal ?'':"auth-background"} >
@@ -12,13 +12,14 @@ function AuthContainer({ modal, title, description, children }) {
                 <div className="container-fluid position-relative auth_container">
                    <div style={modal&&{height:'200px'}} className={modal?'d-flex align-center mt-5':"row justify-content-center align-items-center d-flex align-center mb-5 inner_form_con"}>
                         <div className={modal ? ``:`col-xl-3 col-lg-7 col-md-6  col form_container `}>
+                              {backRedirect && <button onClick={()=>backRedirect(false)} style={{color:'rgba(143, 7, 231, 1)'}} className='btn'> <i className='fa fa-angle-left'></i></button>}
                             <div className="">
-                                <div className="text-center ">
-                                    <p style={{ display: 'flex', justifyContent: 'center', marginBottom: '60px' }}>
+                                <div className="text-center pl-3">
+                                  {!modal &&  <p style={{ display: 'flex', justifyContent: 'center', marginBottom: '60px' }}>
                                         <a href="#">
                                             <img src={zagasmLogo} alt="Zagasm Logo" style={{ width: '50px', height: '50px', }} />
                                         </a>
-                                    </p>
+                                    </p>}
                                     <motion.h5 initial={{ opacity: 0, x: -70 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ duration: 0.9, ease: "easeOut" }} className=" container_heading_text" >{title}</motion.h5>
@@ -31,14 +32,7 @@ function AuthContainer({ modal, title, description, children }) {
                             </div>
                         </div>
                     </div>
-                     {/* <div className="auth_footer ">
-                        <div className=''><a href="">Language</a></div>
-                        <ul>
-                            <li><a href="#">Terms and conditions </a></li>
-                            <li><Link to={'/privacy-policy'}>Privacy and policy  </Link></li>
-                            <li><a href="#">Help  </a></li>
-                        </ul>
-                    </div> */}
+                   
                 </div>
             </div>
         </Fragment>

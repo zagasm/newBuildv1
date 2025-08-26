@@ -14,24 +14,22 @@ import { useAuth } from "../../../../pages/auth/AuthContext";
 import axios from "axios";
 
 const PostSignupForm = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated,token } = useAuth();
   const [dob, setDob] = useState("");
   const [gender, setGender] = useState("");
   const [tosendUserdata, settosendUserdata] = useState();
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dateInputRef = useRef(null);
-
   // Return null if user is not authenticated or doesn't exist
-  if (!isAuthenticated || !user?.user) {
+  if (!user) {
     return null;
   }
-
+  // console.log(token);
   // Return null if user already has gender set
-  if (user.user.gender) {
+  if (user && user.gender ) {
     return null;
   }
-
   const handleWrapperClick = () => {
     if (dateInputRef.current?.showPicker) {
       dateInputRef.current.showPicker();
@@ -41,7 +39,6 @@ const PostSignupForm = () => {
   };
 
   const isFormValid = dob && gender;
-  
   const isAtLeast15 = (dob) => {
     const birthDate = new Date(dob);
     const today = new Date();
@@ -68,7 +65,7 @@ const PostSignupForm = () => {
     setIsLoading(true);
     try {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/api/v1/users/update/${user.user.id}`,
+        `${import.meta.env.VITE_API_URL}/api/v1/users/update`,
         {
           gender: gender,
           date_of_birth: dob,
@@ -76,7 +73,7 @@ const PostSignupForm = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
+            ...(user?.id && { Authorization: `Bearer ${token}` })
           },
         }
       );
@@ -99,7 +96,7 @@ const PostSignupForm = () => {
   };
 
   if (formSubmitted) {
-    return <SignUpCodecomponent token={user.token} userupdate={tosendUserdata} type="phone" />;
+    return <SignUpCodecomponent  userupdate={tosendUserdata} type="phone" />;
   }
 
   return (
@@ -192,14 +189,14 @@ const PostSignupForm = () => {
               color: isFormValid ? "#fff" : "#999",
               cursor: isFormValid ? "pointer" : "not-allowed",
               marginTop: 20,
-              padding: "10px 20px",
+              // padding: "10px 20px",
               border: "none",
               borderRadius: "6px",
               width: "100%",
             }}
           >
             {isLoading ? (
-              <div className="loader">
+              <div className="loader m-0 m-auto p-0">
                 <div className="loader-spinner"></div>
               </div>
             ) : (

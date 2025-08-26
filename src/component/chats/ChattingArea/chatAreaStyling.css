@@ -1,0 +1,165 @@
+.chatAreaContainer {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+/* Top Section - Header */
+.topSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    background: #fff;
+}
+.userDetails {
+    display: flex;
+    align-items: center;
+}
+.userAvatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+.userText {
+    display: flex;
+    flex-direction: column;
+}
+.username {
+    font-weight: 600;
+    font-size: 15px;
+    color: #262626;
+}
+.handle {
+    font-size: 13px;
+    color: #8e8e8e;
+}
+.miniFeatures {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.iconBtn {
+    font-size: 20px;
+    cursor: pointer;
+    color: #262626;
+}
+/* Chat Body */
+.bodySection {
+    background: #fafafa;
+    overflow-y: auto;
+    height: 750px; /* FIXED HEIGHT */
+    padding: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+}
+.bodySection::-webkit-scrollbar {
+    width: 6px;
+}
+.bodySection::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+}
+.bodySection::-webkit-scrollbar-track {
+    background: transparent;
+}
+/* Footer Section */
+.footerSection {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-top: 1px solid #eee;
+    background: #fff;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
+.footerIconBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #555;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.footerIconBtn:hover {
+    color: #000;
+}
+.chatInput {
+    flex: 1;
+    border: none;
+    background: #f0f0f0;
+    border-radius: 20px;
+    padding: 8px 12px;
+    margin: 0 8px;
+    font-size: 14px;
+}
+.chatInput:focus {
+    outline: none;
+}
+.sendBtn {
+    color: #0095f6;
+}
+/* Floating Start Chat Button */
+.startChatBtn {
+    position: absolute;
+    bottom: 70px; /* above footer */
+    right: 16px;
+    background: #0095f6;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    padding: 12px;
+    cursor: pointer;
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+    transition: 0.2s;
+}
+.startChatBtn:hover {
+    background: #007ac1;
+}
+.mediaPreviewContainer {
+  display: flex;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+  overflow-x: auto;
+}
+
+.mediaPreviewItem {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mediaPreviewItem img,
+.mediaPreviewItem video {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.mediaPreviewItem audio {
+  height: 40px;
+}
+
+.removeMediaBtn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: px;
+}

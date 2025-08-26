@@ -1,0 +1,24 @@
+.account-nav .account-nav-link img {
+     width: 24px;
+     height: 24px;
+     /* color: rgb(194, 189, 189); */
+ }
+  
+/* Default: show full text */
+.truncate-mobile {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+/* On small screens only (mobile) → truncate */
+@media (max-width: 767px) {
+  .truncate-mobile {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px; /* adjust as needed */
+    display: inline-block;
+    vertical-align: middle;
+  }
+}

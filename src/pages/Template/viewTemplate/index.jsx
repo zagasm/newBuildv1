@@ -25,22 +25,9 @@ export default function VewTemplates() {
                                         </div>
                                     </div>
                                     <div className="col-xl-6 col-lg-4 col-md-12  col-sm-12   pr-0 ">
-                                        <div className="middle_template_details">
-                                            <div>
-                                                <h6 className="text-muted">Template description</h6>
-                                                <div class="d-flex align-items-center mt-4 mb-3 job-item-body">
-                                                    <div class="overlap-rounded-circle">
-                                                        <img  class="rounded-circle shadow-sm user_template_img" data-toggle="tooltip" data-placement="top" title="Sophia Lee" src="https://randomuser.me/api/portraits/men/41.jpg" alt="" />
-                                                        <img  class="rounded-circle shadow-sm user_template_img" data-toggle="tooltip" data-placement="top" title="John Doe" src="https://randomuser.me/api/portraits/women/33.jpg" alt="" />
-                                                        <img  class="rounded-circle shadow-sm user_template_img" data-toggle="tooltip" data-placement="top" title="Julia Cox" src="https://randomuser.me/api/portraits/men/22.jpg" alt="" />
-                                                        <img  class="rounded-circle shadow-sm user_template_img" data-toggle="tooltip" data-placement="top" title="Robert Cook" src="https://randomuser.me/api/portraits/women/51.jpg" alt="" />
-                                                        <img  class="rounded-circle shadow-sm user_template_img" data-toggle="tooltip" data-placement="top" title="Sophia Lee" src="https://randomuser.me/api/portraits/women/29.jpg" alt="" />
-                                                    </div>
-                                                    <span class="font-weight-lighter">+50K users</span>
-                                                </div>
-                                                <h2>Name of Template</h2>
-                                            </div>
-                                        </div>
+                                    
+                                    
+                                    
                                     </div>
                                     <div className="col-xl-3 col-lg-4 col-md-12  col-sm-12  pr-0 ">
                                         <div className='use_template_container' >

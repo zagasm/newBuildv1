@@ -10,7 +10,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
-export function SignUp({modal}) {
+export function SignUp({ modal }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({});
@@ -67,7 +67,6 @@ export function SignUp({modal}) {
       showToast.error("Please enter a valid phone number");
       return;
     }
-
     setIsLoading(true);
     try {
 
@@ -77,7 +76,7 @@ export function SignUp({modal}) {
         {
           first_name: formData.first_name,
           last_name: formData.last_name,
-          phone: formData.phone,
+          phone: '+' + formData.phone,
           password: formData.password
         },
         {
@@ -94,7 +93,6 @@ export function SignUp({modal}) {
         setFormData({});
         const { user, token } = data;
         login({ token, user });
-         {!modal && navigate("/")}
       } else {
         showToast.error(message || "An error occurred. Please try again.");
         setError(message || "An error occurred. Please try again.");
@@ -114,7 +112,7 @@ export function SignUp({modal}) {
 
   return (
     <AuthContainer modal={modal} title="Create your account" description="">
-      <form autoComplete="off" className={modal?'':"pr-3 pl-3"} onSubmit={handleSubmit}>
+      <form autoComplete="off" className={modal ? 'signup-form' : "pr-3 pl-3"} onSubmit={handleSubmit}>
         {error && <div className="text-danger mb-3 alert alert-danger">{error}</div>}
 
         <div className="row p-0 m-0">
@@ -169,7 +167,8 @@ export function SignUp({modal}) {
                 paddingLeft: "60px",
                 outline: "none"
               }}
-              inputClass="form-control input custom-phone-input"
+               containerClass="phone-input-container"
+              inputClass="form-control input custom-phone-input pl-5"
               specialLabel=""
               enableSearch
             />
@@ -232,7 +231,7 @@ export function SignUp({modal}) {
           )}
         </button>
 
-       { !modal && <> <div className="text-center mt-3 border-botto pb-3 mb-3">
+        {!modal && <> <div className="text-center mt-3 border-botto pb-3 mb-3">
           <p className="small text-muted">Or continue with</p>
           <div className="row">
             <div className="col-6">
@@ -248,14 +247,19 @@ export function SignUp({modal}) {
             </div>
           </div>
         </div>
-
-        <div className="py-3 text-center auth-foote mt-4">
-          <span>
-            Already have an account? <Link className="font-weight-bol" to="/auth/signin">Sign in</Link>
-          </span>
-        </div> </>}
-
+          <div className="py-3 text-center auth-foote mt-4">
+            <span>
+              Already have an account? <Link className="font-weight-bol" to="/auth/signin">Sign in</Link>
+            </span>
+          </div> </>}
       </form>
+      <div className="auth_footer mt-5">
+        <ul>
+          <li><Link to={'/support'}>Support </Link></li>
+          <li><Link to={'/privacy-policy'}>Privacy and policy  </Link></li>
+          <li><Link to={'/marketing'}>Marketing  </Link></li>
+        </ul>
+      </div>
     </AuthContainer>
   );
 }
